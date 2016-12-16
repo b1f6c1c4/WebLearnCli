@@ -14,12 +14,7 @@ namespace WebLearnCli
                     Type = CredentialType.DomainVisiblePassword
                 };
 
-        public static void DropCredential()
-        {
-            var cred = CredentialTemplate();
-            if (cred.Exists())
-                cred.Delete();
-        }
+        public static bool DropCredential() => CredentialTemplate().Delete();
 
         private static Credential PromptForCredential()
         {
