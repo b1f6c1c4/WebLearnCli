@@ -7,19 +7,35 @@ namespace WebLearnCore
 {
     public partial class CrawlerOld
     {
-        public async Task FetchLesson(Lesson lesson)
+        public async Task<LessonExtension> FetchLesson(Lesson lesson)
         {
             if (lesson.Version)
-                await m_NewFacade.GetAnnouncements(lesson);
+            {
+                var ann = m_NewFacade.GetAnnouncements(lesson);
+
+                await Task.WhenAll(ann);
+
+                return
+                    new LessonExtension
+                    {
+                        Announcements = ann.Result
+                    };
+            }
             else
             {
                 var ann = GetAnnouncements(lesson);
 
                 await Task.WhenAll(ann);
+
+                return
+                    new LessonExtension
+                        {
+                            Announcements = ann.Result
+                        };
             }
         }
 
-        private async Task GetAnnouncements(Lesson obj)
+        private async Task<List<Announcement>> GetAnnouncements(Lesson obj)
         {
             var req =
                 Get(
@@ -54,7 +70,7 @@ namespace WebLearnCore
             }
             await Task.WhenAll(tasks);
 
-            obj.Announcements = lst;
+            return lst;
         }
 
         private async Task GetAnnouncement(Lesson lesson, Announcement obj)

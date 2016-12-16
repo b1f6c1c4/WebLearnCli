@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -31,50 +32,18 @@ namespace WebLearnCore
                     @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
 
             var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
-
             req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/mainstudent.jsp";
 
             var s = await ReadToEnd(req);
 
-            var termS = "";
-            var objs = new List<Lesson>();
-            var tasks = new List<Task>();
-
             var regex2 =
                 new Regex(
                     @"(?<ticket>http://learn\.cic\.tsinghua\.edu\.cn/j_spring_security_thauth_roaming_entry.*renewSession)");
+            await m_NewFacade.Login(regex2.Match(s).Groups["ticket"].Value);
 
-            tasks.Add(m_NewFacade.Login(regex2.Match(s).Groups["ticket"].Value));
+            var terms = await ParseLessonList(regex, s);
 
-            var matchCollection = regex.Matches(s);
-            for (var i = 0; i < matchCollection.Count; i++)
-            {
-                var match = matchCollection[i];
-                termS = match.Groups["term"].Value;
-                if (string.IsNullOrEmpty(match.Groups["idx"].Value))
-                {
-                    var obj = new Lesson
-                                  {
-                                      CourseId = match.Groups["id"].Value,
-                                      Name = match.Groups["name"].Value,
-                                      Index = Convert.ToInt32(match.Groups["index"].Value)
-                                  };
-                    tasks.Add(GetBbsId(obj));
-                    objs.Add(obj);
-                }
-                else
-                    objs.Add(
-                             new Lesson
-                                 {
-                                     CourseId = match.Groups["idx"].Value,
-                                     Name = match.Groups["name"].Value,
-                                     Index = Convert.ToInt32(match.Groups["index"].Value)
-                                 });
-            }
-
-            await Task.WhenAll(tasks);
-
-            return new Term { Info = termS, Lessons = objs };
+            return terms.SingleOrDefault();
         }
 
         private async Task<List<Term>> FetchPreviousLessonList()
@@ -84,11 +53,13 @@ namespace WebLearnCore
                     @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>");
 
             var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?typepage=2");
-
             req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn";
 
-            var s = await ReadToEnd(req);
+            return await ParseLessonList(regex, await ReadToEnd(req));
+        }
 
+        private async Task<List<Term>> ParseLessonList(Regex regex, string s)
+        {
             var objs = new List<Term>();
             var rawObjs = new Dictionary<string, List<Lesson>>();
             var tasks = new List<Task>();
@@ -99,18 +70,21 @@ namespace WebLearnCore
                 var match = matchCollection[i];
 
                 List<Lesson> lst;
+                TermInfo termInfo = match.Groups["term"].Value;
                 if (!rawObjs.TryGetValue(match.Groups["term"].Value, out lst))
                 {
                     lst = new List<Lesson>();
                     rawObjs.Add(match.Groups["term"].Value, lst);
-                    objs.Add(new Term { Info = match.Groups["term"].Value, Lessons = lst });
+                    objs.Add(new Term { Info = termInfo, Lessons = lst });
                 }
 
                 if (string.IsNullOrEmpty(match.Groups["idx"].Value))
                 {
                     var obj = new Lesson
                                   {
+                                      Term = termInfo,
                                       CourseId = match.Groups["id"].Value,
+                                      Version = false,
                                       Name = match.Groups["name"].Value,
                                       Index = Convert.ToInt32(match.Groups["index"].Value)
                                   };
@@ -121,14 +95,15 @@ namespace WebLearnCore
                     lst.Add(
                             new Lesson
                                 {
+                                    Term = termInfo,
                                     CourseId = match.Groups["idx"].Value,
+                                    Version = true,
                                     Name = match.Groups["name"].Value,
                                     Index = Convert.ToInt32(match.Groups["index"].Value)
                                 });
             }
 
             await Task.WhenAll(tasks);
-
             return objs;
         }
 

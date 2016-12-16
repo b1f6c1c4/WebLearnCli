@@ -5,14 +5,8 @@ namespace WebLearnCore
 {
     public struct TermInfo : IComparable<TermInfo>
     {
-        public readonly int Year;
-        public readonly int Index;
-
-        public TermInfo(int year, int index)
-        {
-            Year = year;
-            Index = index;
-        }
+        public int Year;
+        public int Index;
 
         public static implicit operator TermInfo(string value)
         {
@@ -39,7 +33,7 @@ namespace WebLearnCore
                     throw new FormatException();
             }
 
-            return new TermInfo(year, index);
+            return new TermInfo { Year = year, Index = index };
         }
 
         public override string ToString()
@@ -102,9 +96,15 @@ namespace WebLearnCore
         public string CourseId { get; set; }
         public string BbsId { get; set; }
 
-        public IReadOnlyList<Announcement> Announcements { get; set; }
-        public IReadOnlyList<Document> Documents { get; set; }
-        public IReadOnlyList<Assignment> Assignments { get; set; }
+        public override string ToString() =>
+            $"{Term}/{Name}({Index})";
+    }
+
+    public sealed class LessonExtension
+    {
+        public List<Announcement> Announcements { get; set; }
+        public List<Document> Documents { get; set; }
+        public List<Assignment> Assignments { get; set; }
     }
 
     public sealed class Announcement

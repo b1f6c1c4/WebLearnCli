@@ -54,7 +54,7 @@ namespace WebLearnCore
             return req;
         }
 
-        protected static async Task<string> ReadToEnd(HttpWebRequest req)
+        protected static async Task<string> ReadToEnd(WebRequest req)
         {
             var res = await req.GetResponseAsync();
             try

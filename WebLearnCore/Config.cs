@@ -9,26 +9,34 @@ namespace WebLearnCore
     {
         public List<Lesson> Lessons { get; set; }
 
-        public Lesson GetLesson(TermInfo term, Lesson lesson)
+        public void Update(TermInfo term, Lesson lesson)
         {
             var setting =
                 Lessons.SingleOrDefault(
                                         ls =>
                                         ls.Term == term && ls.Name == lesson.Name && ls.Index == lesson.Index);
             if (setting != null)
-                return setting;
+            {
+                setting.CourseId = lesson.CourseId;
+                setting.BbsId = lesson.BbsId;
+                setting.Version = lesson.Version;
+                return;
+            }
 
-            var s = new Lesson
-                        {
-                            Term = term,
-                            Name = lesson.Name,
-                            Index = lesson.Index,
-                            Ignore = false,
-                            Path = lesson.Name,
-                            Alias = new List<string>()
-                        };
+            var s =
+                new Lesson
+                    {
+                        Term = term,
+                        Name = lesson.Name,
+                        Index = lesson.Index,
+                        CourseId = lesson.CourseId,
+                        BbsId = lesson.BbsId,
+                        Version = lesson.Version,
+                        Ignore = false,
+                        Path = lesson.Name,
+                        Alias = new List<string>()
+                    };
             Lessons.Add(s);
-            return s;
         }
     }
 

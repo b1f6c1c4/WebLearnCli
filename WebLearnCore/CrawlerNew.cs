@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -18,7 +19,7 @@ namespace WebLearnCore
             await ReadToEnd(req);
         }
 
-        private async Task<JObject> ReadJsonToEnd(HttpWebRequest req)
+        private static async Task<JObject> ReadJsonToEnd(WebRequest req)
         {
             var res = await req.GetResponseAsync();
             try
@@ -38,7 +39,7 @@ namespace WebLearnCore
             }
         }
 
-        public async Task GetAnnouncements(Lesson lesson)
+        public async Task<List<Announcement>> GetAnnouncements(Lesson lesson)
         {
             var req =
                 Get(
@@ -47,7 +48,7 @@ namespace WebLearnCore
             req.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/coursenotice/{lesson.CourseId}";
 
             var s = await ReadJsonToEnd(req);
-            lesson.Announcements = s["paginationList"]["recordList"]
+            return s["paginationList"]["recordList"]
                 .Select(
                         j =>
                         new Announcement
@@ -56,7 +57,7 @@ namespace WebLearnCore
                                 Date = j["courseNotice"]["regDate"].Value<DateTime>(),
                                 From = j["courseNotice"]["owner"].Value<string>(),
                                 Content = j["courseNotice"]["detail"].Value<string>(),
-                                Id = j["courseNotice"]["id"].Value<Int64>().ToString()
+                                Id = j["courseNotice"]["id"].Value<long>().ToString()
                             }).ToList();
         }
     }

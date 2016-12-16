@@ -20,7 +20,10 @@ namespace WebLearnCli
         {
             try
             {
-                Facade.Fetch(m_Previous, remainingArguments).Wait();
+                if (remainingArguments.Length == 0)
+                    Facade.Fetch(m_Previous).Wait();
+                else
+                    Facade.Fetch(m_Previous, remainingArguments).Wait();
                 var cmd = new StatusCommand();
                 cmd.Run(remainingArguments);
                 return 0;
@@ -32,7 +35,7 @@ namespace WebLearnCli
             }
             catch (Exception e)
             {
-                Console.Error.WriteLine($"Unknown error: {e.Message}");
+                Console.Error.WriteLine($"Unknown error: {e}");
                 return 1;
             }
         }
