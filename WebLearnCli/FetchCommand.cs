@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Security.Authentication;
 using ManyConsole;
 using WebLearnEntities;
@@ -16,6 +17,13 @@ namespace WebLearnCli
             {
                 var facade = new Facade();
                 facade.Login(CredentialManager.TryGetCredential());
+                var termT = facade.FetchCurrentLessonList();
+                termT.Wait();
+                var term = termT.Result;
+                foreach (var lesson in term.Lessons.Cast<WebLearnOld.Lesson>())
+                {
+                    Console.Out.WriteLine($"{lesson.Name} {lesson.BbsId} {lesson.CourseId}");
+                }
                 return 0;
             }
             catch (AuthenticationException)

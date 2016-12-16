@@ -3,16 +3,36 @@ using System.Collections.Generic;
 
 namespace WebLearnEntities
 {
+    public sealed class Term
+    {
+        public int Year { get; set; }
+        public int Index { get; set; }
+
+        public IReadOnlyList<Lesson> Lessons;
+
+        public override string ToString()
+        {
+            switch (Index)
+            {
+                case 0:
+                    return $"{Year}-{Year + 1}秋季学期";
+                case 1:
+                    return $"{Year}-{Year + 1}春季学期";
+                case 2:
+                    return $"{Year}-{Year + 1}夏季学期";
+                default:
+                    throw new InvalidOperationException();
+            }
+        }
+    }
+
     public abstract class Lesson
     {
         public string Name { get; set; }
-        public string Abbreviation { get; set; }
-        public string CourseId { get; set; }
-        public string BbsId { get; set; }
 
-        public List<Announcement> Announcements { get; set; }
-        public List<Document> Documents { get; set; }
-        public List<Assignment> Assignments { get; set; }
+        public IReadOnlyList<Announcement> Announcements { get; set; }
+        public IReadOnlyList<Document> Documents { get; set; }
+        public IReadOnlyList<Assignment> Assignments { get; set; }
     }
 
     public abstract class Announcement

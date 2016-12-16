@@ -1,11 +1,11 @@
-﻿namespace WebLearnEntities
+﻿using System.Threading.Tasks;
+
+namespace WebLearnEntities
 {
     public interface IFacade
     {
-        void Login(WebLearnCredential cred);
+        Task FetchLesson(Lesson lesson);
 
-        void FetchLesson(Lesson lesson);
-
-        void SaveDocument(Document doc, string path);
+        Task SaveDocument(Document doc, string path);
     }
 }
