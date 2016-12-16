@@ -5,7 +5,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebLearnEntities
+namespace WebLearnCore
 {
     public abstract class CrawlerBase
     {

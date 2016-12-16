@@ -6,11 +6,10 @@ using System.Net.NetworkInformation;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using WebLearnEntities;
 
-namespace WebLearnNew
+namespace WebLearnCore
 {
-    public class Facade : CrawlerBase
+    public class CrawlerNew : CrawlerBase
     {
         public async Task Login(string ticket)
         {

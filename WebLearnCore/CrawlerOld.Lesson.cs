@@ -2,20 +2,18 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using WebLearnEntities;
 
-namespace WebLearnOld
+namespace WebLearnCore
 {
-    public partial class Facade
+    public partial class CrawlerOld
     {
-        public async Task FetchLesson(WebLearnEntities.Lesson lesson)
+        public async Task FetchLesson(Lesson lesson)
         {
-            var l = lesson as Lesson;
-            if (l == null)
-                await m_NewFacade.GetAnnouncements(lesson as WebLearnNew.Lesson);
+            if (lesson.Version)
+                await m_NewFacade.GetAnnouncements(lesson);
             else
             {
-                var ann = GetAnnouncements(l);
+                var ann = GetAnnouncements(lesson);
 
                 await Task.WhenAll(ann);
             }

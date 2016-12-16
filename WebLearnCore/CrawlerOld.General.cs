@@ -3,13 +3,12 @@ using System.Collections.Generic;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using WebLearnEntities;
 
-namespace WebLearnOld
+namespace WebLearnCore
 {
-    public partial class Facade : CrawlerBase
+    public partial class CrawlerOld : CrawlerBase
     {
-        private readonly WebLearnNew.Facade m_NewFacade = new WebLearnNew.Facade();
+        private readonly CrawlerNew m_NewFacade = new CrawlerNew();
 
         public async Task Login(WebLearnCredential cred)
         {
@@ -38,7 +37,7 @@ namespace WebLearnOld
             var s = await ReadToEnd(req);
 
             var termS = "";
-            var objs = new List<WebLearnEntities.Lesson>();
+            var objs = new List<Lesson>();
             var tasks = new List<Task>();
 
             var regex2 =
@@ -65,7 +64,7 @@ namespace WebLearnOld
                 }
                 else
                     objs.Add(
-                             new WebLearnNew.Lesson
+                             new Lesson
                                  {
                                      CourseId = match.Groups["idx"].Value,
                                      Name = match.Groups["name"].Value,
@@ -91,7 +90,7 @@ namespace WebLearnOld
             var s = await ReadToEnd(req);
 
             var objs = new List<Term>();
-            var rawObjs = new Dictionary<string, List<WebLearnEntities.Lesson>>();
+            var rawObjs = new Dictionary<string, List<Lesson>>();
             var tasks = new List<Task>();
 
             var matchCollection = regex.Matches(s);
@@ -99,10 +98,10 @@ namespace WebLearnOld
             {
                 var match = matchCollection[i];
 
-                List<WebLearnEntities.Lesson> lst;
+                List<Lesson> lst;
                 if (!rawObjs.TryGetValue(match.Groups["term"].Value, out lst))
                 {
-                    lst = new List<WebLearnEntities.Lesson>();
+                    lst = new List<Lesson>();
                     rawObjs.Add(match.Groups["term"].Value, lst);
                     objs.Add(new Term { Info = match.Groups["term"].Value, Lessons = lst });
                 }
@@ -120,7 +119,7 @@ namespace WebLearnOld
                 }
                 else
                     lst.Add(
-                            new WebLearnNew.Lesson
+                            new Lesson
                                 {
                                     CourseId = match.Groups["idx"].Value,
                                     Name = match.Groups["name"].Value,

@@ -1,6 +1,6 @@
 ﻿using System;
 using ManyConsole;
-using WebLearnEntities;
+using WebLearnCore;
 
 namespace WebLearnCli
 {

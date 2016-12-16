@@ -2,24 +2,23 @@
 using System.IO;
 using System.Linq;
 using Newtonsoft.Json;
-using WebLearnEntities;
 
 namespace WebLearnCore
 {
     internal sealed class Config
     {
-        public List<LessonSetting> LessonSettings { get; set; }
+        public List<Lesson> Lessons { get; set; }
 
-        public LessonSetting GetLessonSetting(TermInfo term, Lesson lesson)
+        public Lesson GetLesson(TermInfo term, Lesson lesson)
         {
             var setting =
-                LessonSettings.SingleOrDefault(
-                                               ls =>
-                                               ls.Term == term && ls.Name == lesson.Name && ls.Index == lesson.Index);
+                Lessons.SingleOrDefault(
+                                        ls =>
+                                        ls.Term == term && ls.Name == lesson.Name && ls.Index == lesson.Index);
             if (setting != null)
                 return setting;
 
-            var s = new LessonSetting
+            var s = new Lesson
                         {
                             Term = term,
                             Name = lesson.Name,
@@ -28,20 +27,9 @@ namespace WebLearnCore
                             Path = lesson.Name,
                             Alias = new List<string>()
                         };
-            LessonSettings.Add(s);
+            Lessons.Add(s);
             return s;
         }
-    }
-
-    internal sealed class LessonSetting
-    {
-        public TermInfo Term { get; set; }
-        public string Name { get; set; }
-        public int Index { get; set; }
-
-        public bool Ignore { get; set; }
-        public string Path { get; set; }
-        public List<string> Alias { get; set; }
     }
 
     internal static class ConfigManager

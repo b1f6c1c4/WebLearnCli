@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebLearnEntities
+namespace WebLearnCore
 {
-    public struct TermInfo: IComparable<TermInfo>
+    public struct TermInfo : IComparable<TermInfo>
     {
         public readonly int Year;
         public readonly int Index;
@@ -87,17 +87,27 @@ namespace WebLearnEntities
         public IReadOnlyList<Lesson> Lessons;
     }
 
-    public abstract class Lesson
+    public sealed class Lesson
     {
+        public TermInfo Term { get; set; }
         public string Name { get; set; }
         public int Index { get; set; }
+
+        public bool Version { get; set; }
+
+        public bool Ignore { get; set; }
+        public string Path { get; set; }
+        public List<string> Alias { get; set; }
+
+        public string CourseId { get; set; }
+        public string BbsId { get; set; }
 
         public IReadOnlyList<Announcement> Announcements { get; set; }
         public IReadOnlyList<Document> Documents { get; set; }
         public IReadOnlyList<Assignment> Assignments { get; set; }
     }
 
-    public class Announcement
+    public sealed class Announcement
     {
         public string Title { get; set; }
         public string Content { get; set; }
@@ -107,7 +117,7 @@ namespace WebLearnEntities
         public string Id { get; set; }
     }
 
-    public abstract class Document
+    public sealed class Document
     {
         public string Title { get; set; }
         public string Abstract { get; set; }

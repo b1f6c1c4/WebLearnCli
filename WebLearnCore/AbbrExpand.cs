@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using WebLearnEntities;
 
 namespace WebLearnCore
 {
@@ -19,7 +16,7 @@ namespace WebLearnCore
         }
     }
 
-    internal sealed class FunctorComparer<T,TOut> : IComparer<T>
+    internal sealed class FunctorComparer<T, TOut> : IComparer<T>
     {
         public Func<T, TOut> Functor;
         public IComparer<TOut> RawComparer;
@@ -30,21 +27,21 @@ namespace WebLearnCore
 
     internal static class AbbrExpand
     {
-        public static LessonSetting GetLesson(string str)
+        public static Lesson GetLesson(string str)
         {
             ConfigManager.Load();
 
-            var lst = ConfigManager.Config.LessonSettings.Where(l => l.Name == str || l.Alias.Contains(str)).ToList();
+            var lst = ConfigManager.Config.Lessons.Where(l => l.Name == str || l.Alias.Contains(str)).ToList();
             lst.Sort(
-                     new ChainedComparer<LessonSetting>
+                     new ChainedComparer<Lesson>
                          {
                              FirstComparer =
-                                 new FunctorComparer<LessonSetting, TermInfo>
+                                 new FunctorComparer<Lesson, TermInfo>
                                      {
                                          Functor = l => l.Term
                                      },
                              SecondComparer =
-                                 new FunctorComparer<LessonSetting, int>
+                                 new FunctorComparer<Lesson, int>
                                      {
                                          Functor = l => l.Ignore ? 1 : 0
                                      }

@@ -68,10 +68,6 @@
       <Project>{c818df9b-e7ec-4cc6-95c1-bdd5a89191fb}</Project>
       <Name>WebLearnCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\WebLearnEntities\WebLearnEntities.csproj">
-      <Project>{71e79bd7-7129-4608-8919-4ba50d34e79c}</Project>
-      <Name>WebLearnEntities</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

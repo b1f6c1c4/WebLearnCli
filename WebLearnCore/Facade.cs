@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using WebLearnEntities;
 
 namespace WebLearnCore
 {
@@ -18,14 +17,14 @@ namespace WebLearnCore
             ConfigManager.Config =
                 new Config
                     {
-                        LessonSettings = new List<LessonSetting>()
+                        Lessons = new List<Lesson>()
                     };
             ConfigManager.Save();
         }
 
         public static async Task Fetch(bool previous, IEnumerable<string> args)
         {
-            var facade = new WebLearnOld.Facade();
+            var facade = new CrawlerOld();
             await facade.Login(CredentialManager.TryGetCredential());
 
             List<Term> terms;
@@ -39,14 +38,14 @@ namespace WebLearnCore
             foreach (var term in terms)
                 foreach (var lesson in term.Lessons)
                 {
-                    var settings = ConfigManager.Config.GetLessonSetting(term.Info, lesson);
+                    var settings = ConfigManager.Config.GetLesson(term.Info, lesson);
                     if (settings.Ignore)
                         continue;
                 }
 
             ConfigManager.Save();
 
-            var lessons = new List<LessonSetting>();
+            var lessons = new List<Lesson>();
             foreach (var arg in args)
             {
                 var l = AbbrExpand.GetLesson(arg);
