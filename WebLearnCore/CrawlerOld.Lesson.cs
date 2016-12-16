@@ -12,13 +12,15 @@ namespace WebLearnCore
             if (lesson.Version)
             {
                 var ann = m_NewFacade.GetAnnouncements(lesson);
+                var doc = m_NewFacade.GetDocuments(lesson);
 
-                await Task.WhenAll(ann);
+                await Task.WhenAll(ann, doc);
 
                 return
                     new LessonExtension
                         {
-                            Announcements = ann.Result
+                            Announcements = ann.Result,
+                            Documents = doc.Result
                         };
             }
             else
