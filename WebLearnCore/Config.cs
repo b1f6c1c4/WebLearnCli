@@ -49,9 +49,9 @@ namespace WebLearnCore
         public static Config Config { get; set; }
 
         public static void Load() =>
-            Config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(DbHelper.GetPath("config")));
+            Config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(DbHelper.GetPath("config.json")));
 
         public static void Save() =>
-            File.WriteAllText(DbHelper.GetPath("config"), JsonConvert.SerializeObject(Config, Formatting.Indented));
+            File.WriteAllText(DbHelper.GetPath("config.json"), JsonConvert.SerializeObject(Config, Formatting.Indented));
     }
 }

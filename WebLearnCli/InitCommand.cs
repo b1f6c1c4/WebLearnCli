@@ -13,6 +13,7 @@ namespace WebLearnCli
             try
             {
                 Facade.Init();
+                Console.Out.WriteLine("Initialized an empty weblearn folder.");
                 return 0;
             }
             catch (ApplicationException e)

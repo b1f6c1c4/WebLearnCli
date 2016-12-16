@@ -23,7 +23,7 @@ namespace WebLearnCore
             ConfigManager.Save();
         }
 
-        public static async Task Fetch(bool previous)
+        public static async Task Fetch(bool previous, IEnumerable<string> args)
         {
             var facade = new WebLearnOld.Facade();
             await facade.Login(CredentialManager.TryGetCredential());
@@ -45,6 +45,17 @@ namespace WebLearnCore
                 }
 
             ConfigManager.Save();
+
+            var lessons = new List<LessonSetting>();
+            foreach (var arg in args)
+            {
+                var l = AbbrExpand.GetLesson(arg);
+                if (l == null)
+                    throw new ApplicationException($"Lesson \"{arg}\" not found.");
+                lessons.Add(l);
+            }
+
+            throw new NotImplementedException();
         }
     }
 }

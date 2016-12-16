@@ -13,13 +13,14 @@ namespace WebLearnCli
         {
             IsCommand("fetch", "update information");
             HasOption("previous", "fetch old lessons.", t => m_Previous = t != null);
+            HasAdditionalArguments(null, "lessons");
         }
 
         public override int Run(string[] remainingArguments)
         {
             try
             {
-                Facade.Fetch(m_Previous).Wait();
+                Facade.Fetch(m_Previous, remainingArguments).Wait();
                 var cmd = new StatusCommand();
                 cmd.Run(remainingArguments);
                 return 0;

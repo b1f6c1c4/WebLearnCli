@@ -34,9 +34,9 @@ namespace WebLearnCore
         public static Status Status { get; set; }
 
         public static void Load() =>
-            Status = JsonConvert.DeserializeObject<Status>(File.ReadAllText(DbHelper.GetPath("status")));
+            Status = JsonConvert.DeserializeObject<Status>(File.ReadAllText(DbHelper.GetPath("status.json")));
 
         internal static void Save() =>
-            File.WriteAllText(DbHelper.GetPath("status"), JsonConvert.SerializeObject(Status, Formatting.Indented));
+            File.WriteAllText(DbHelper.GetPath("status.json"), JsonConvert.SerializeObject(Status, Formatting.Indented));
     }
 }
