@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Security.Authentication;
-using System.Threading.Tasks;
 using ManyConsole;
-using WebLearnEntities;
-using WebLearnOld;
+using WebLearnCore;
 
 namespace WebLearnCli
 {
@@ -21,7 +19,21 @@ namespace WebLearnCli
         {
             try
             {
-                Run().Wait();
+                var statusT = Facade.Fetch(m_Previous);
+                statusT.Wait();
+                var status = statusT.Result;
+                foreach (var lesson in status.Lessons)
+                {
+                    if (!lesson.HasNewAnnouncement &&
+                        !lesson.HasNewDocument &&
+                        !lesson.HasDeadLine)
+                        continue;
+
+                    Console.Out.WriteLine($"{(lesson.HasNewAnnouncement ? "A" : " ")} {(lesson.HasNewDocument ? "F" : " ")} {(lesson.HasDeadLine ? "D" : " ")} {lesson.Name}");
+                }
+
+                foreach (var deadLine in status.DeadLines)
+                    Console.Out.WriteLine(Formatter.Format(deadLine));
                 return 0;
             }
             catch (AuthenticationException)
@@ -33,35 +45,6 @@ namespace WebLearnCli
             {
                 Console.Error.WriteLine($"Unknown error: {e.Message}");
                 return 1;
-            }
-        }
-
-        private async Task Run()
-        {
-            var facade = new Facade();
-            await facade.Login(CredentialManager.TryGetCredential());
-            if (m_Previous)
-            {
-                var terms = await facade.FetchAllLessonList();
-                foreach (var term in terms)
-                {
-                    Console.Out.WriteLine($"Term {term}:");
-
-                    foreach (var lesson in term.Lessons)
-                        Console.Out.WriteLine($"{lesson.Name}");
-
-                    Console.Out.WriteLine();
-                }
-            }
-            else
-            {
-                var term = await facade.FetchCurrentLessonList();
-                foreach (var lesson in term.Lessons)
-                    Console.Out.WriteLine($"{lesson.Name}");
-
-                await facade.FetchLesson(term.Lessons[3]);
-                foreach (var announcement in term.Lessons[3].Announcements)
-                    Console.Out.WriteLine(announcement.Title);
             }
         }
     }

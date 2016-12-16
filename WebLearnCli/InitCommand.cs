@@ -3,7 +3,7 @@ using System.Security.Authentication;
 using System.Threading.Tasks;
 using ManyConsole;
 using WebLearnEntities;
-using WebLearnOld;
+using Facade = WebLearnCore.Facade;
 
 namespace WebLearnCli
 {
@@ -18,8 +18,7 @@ namespace WebLearnCli
         {
             try
             {
-                var core = new WebLearnCore.Facade();
-                core.Init();
+                Facade.Init();
                 return 0;
             }
             catch (ApplicationException e)

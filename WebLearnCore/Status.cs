@@ -16,7 +16,7 @@ namespace WebLearnCore
 
         public bool HasNewAnnouncement { get; set; }
         public bool HasNewDocument { get; set; }
-        public bool HasNewAssignment { get; set; }
+        public bool HasDeadLine { get; set; }
     }
 
     public sealed class DeadLine

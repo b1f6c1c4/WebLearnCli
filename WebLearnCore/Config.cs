@@ -15,6 +15,7 @@ namespace WebLearnCore
         public string Name { get; set; }
         public string Index { get; set; }
 
+        public bool Ignore { get; set; }
         public string Path { get; set; }
         public List<string> Alias { get; set; }
     }

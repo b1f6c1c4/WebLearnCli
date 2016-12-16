@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CredentialCommand.cs" />
+    <Compile Include="Formatter.cs" />
     <Compile Include="InitCommand.cs" />
     <Compile Include="FetchCommand.cs" />
     <Compile Include="Program.cs" />
@@ -69,10 +70,6 @@
     <ProjectReference Include="..\WebLearnEntities\WebLearnEntities.csproj">
       <Project>{71e79bd7-7129-4608-8919-4ba50d34e79c}</Project>
       <Name>WebLearnEntities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebLearnOld\WebLearnOld.csproj">
-      <Project>{014525ae-1cda-40f1-85a0-a25c90018f18}</Project>
-      <Name>WebLearnOld</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
