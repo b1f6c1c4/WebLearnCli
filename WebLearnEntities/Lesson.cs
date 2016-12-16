@@ -58,6 +58,7 @@ namespace WebLearnEntities
     public abstract class Lesson
     {
         public string Name { get; set; }
+        public int Index { get; set; }
 
         public IReadOnlyList<Announcement> Announcements { get; set; }
         public IReadOnlyList<Document> Documents { get; set; }

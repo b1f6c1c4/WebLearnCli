@@ -28,7 +28,7 @@ namespace WebLearnOld
         {
             var regex =
                 new Regex(
-                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
+                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
 
             var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
 
@@ -50,7 +50,8 @@ namespace WebLearnOld
                     var obj = new Lesson
                                   {
                                       CourseId = match.Groups["id"].Value,
-                                      Name = match.Groups["name"].Value
+                                      Name = match.Groups["name"].Value,
+                                      Index = Convert.ToInt32(match.Groups["index"].Value)
                                   };
                     tasks.Add(GetBbsId(obj));
                     objs.Add(obj);
@@ -60,7 +61,8 @@ namespace WebLearnOld
                              new WebLearnNew.Lesson
                                  {
                                      CourseId = match.Groups["idx"].Value,
-                                     Name = match.Groups["name"].Value
+                                     Name = match.Groups["name"].Value,
+                                     Index = Convert.ToInt32(match.Groups["index"].Value)
                                  });
             }
 
@@ -73,7 +75,7 @@ namespace WebLearnOld
         {
             var regex =
                 new Regex(
-                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>");
+                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>");
 
             var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?typepage=2");
 
@@ -103,7 +105,8 @@ namespace WebLearnOld
                     var obj = new Lesson
                                   {
                                       CourseId = match.Groups["id"].Value,
-                                      Name = match.Groups["name"].Value
+                                      Name = match.Groups["name"].Value,
+                                      Index = Convert.ToInt32(match.Groups["index"].Value)
                                   };
                     tasks.Add(GetBbsId(obj));
                     lst.Add(obj);
@@ -113,8 +116,9 @@ namespace WebLearnOld
                             new WebLearnNew.Lesson
                                 {
                                     CourseId = match.Groups["idx"].Value,
-                                    Name = match.Groups["name"].Value
-                                });
+                                    Name = match.Groups["name"].Value,
+                                Index = Convert.ToInt32(match.Groups["index"].Value)
+                            });
             }
 
             await Task.WhenAll(tasks);
