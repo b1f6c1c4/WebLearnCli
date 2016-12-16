@@ -9,6 +9,8 @@ namespace WebLearnOld
 {
     public partial class Facade : CrawlerBase
     {
+        private readonly WebLearnNew.Facade m_NewFacade = new WebLearnNew.Facade();
+
         public async Task Login(WebLearnCredential cred)
         {
             var req = Post(
@@ -38,6 +40,12 @@ namespace WebLearnOld
             var termS = "";
             var objs = new List<WebLearnEntities.Lesson>();
             var tasks = new List<Task>();
+
+            var regex2 =
+                new Regex(
+                    @"(?<ticket>http://learn\.cic\.tsinghua\.edu\.cn/j_spring_security_thauth_roaming_entry.*renewSession)");
+
+            tasks.Add(m_NewFacade.Login(regex2.Match(s).Groups["ticket"].Value));
 
             var matchCollection = regex.Matches(s);
             for (var i = 0; i < matchCollection.Count; i++)

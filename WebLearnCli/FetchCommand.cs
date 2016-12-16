@@ -59,11 +59,9 @@ namespace WebLearnCli
                 foreach (var lesson in term.Lessons)
                     Console.Out.WriteLine($"{lesson.Name}");
 
-                await facade.FetchLesson(term.Lessons[0]);
-                foreach (var announcement in term.Lessons[0].Announcements)
-                {
+                await facade.FetchLesson(term.Lessons[3]);
+                foreach (var announcement in term.Lessons[3].Announcements)
                     Console.Out.WriteLine(announcement.Title);
-                }
             }
         }
     }

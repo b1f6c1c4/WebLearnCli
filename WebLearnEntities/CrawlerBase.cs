@@ -54,7 +54,7 @@ namespace WebLearnEntities
             return req;
         }
 
-        protected async Task<string> ReadToEnd(HttpWebRequest req)
+        protected static async Task<string> ReadToEnd(HttpWebRequest req)
         {
             var res = await req.GetResponseAsync();
             try

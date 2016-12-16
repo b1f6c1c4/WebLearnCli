@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using WebLearnEntities;
@@ -12,11 +11,14 @@ namespace WebLearnOld
         public async Task FetchLesson(WebLearnEntities.Lesson lesson)
         {
             var l = lesson as Lesson;
-            Debug.Assert(l != null);
+            if (l == null)
+                await m_NewFacade.GetAnnouncements(lesson as WebLearnNew.Lesson);
+            else
+            {
+                var ann = GetAnnouncements(l);
 
-            var ann = GetAnnouncements(l);
-
-            await Task.WhenAll(ann);
+                await Task.WhenAll(ann);
+            }
         }
 
         private async Task GetAnnouncements(Lesson obj)
