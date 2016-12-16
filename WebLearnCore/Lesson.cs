@@ -109,23 +109,23 @@ namespace WebLearnCore
 
     public sealed class Announcement
     {
+        public string Id { get; set; }
         public string Title { get; set; }
         public string Content { get; set; }
         public string From { get; set; }
-
         public DateTime? Date { get; set; }
-        public string Id { get; set; }
     }
 
     public sealed class Document
     {
+        public string Id { get; set; }
         public string Title { get; set; }
         public string Abstract { get; set; }
         public double Size { get; set; }
         public DateTime? Date { get; set; }
         public bool IsRead { get; set; }
-
-        public string Path { get; set; }
+        public string FileName { get; set; }
+        public string Url { get; set; }
     }
 
     public abstract class Assignment

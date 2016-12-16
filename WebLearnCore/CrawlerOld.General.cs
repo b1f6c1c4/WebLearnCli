@@ -29,7 +29,7 @@ namespace WebLearnCore
         {
             var regex =
                 new Regex(
-                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
+                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9a-zA-Z-]+).*?>|<a.*?coursehome/(?<idx>[0-9a-zA-Z-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
 
             var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
             req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/mainstudent.jsp";
@@ -50,7 +50,7 @@ namespace WebLearnCore
         {
             var regex =
                 new Regex(
-                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>");
+                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9a-zA-Z-]+).*?>|<a.*?coursehome/(?<idx>[0-9a-zA-Z-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>");
 
             var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?typepage=2");
             req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn";
@@ -109,11 +109,10 @@ namespace WebLearnCore
 
         public async Task<List<Term>> FetchAllLessonList()
         {
-            var p = FetchPreviousLessonList();
-            var c = FetchCurrentLessonList();
-            await Task.WhenAll(p, c);
-            p.Result.Add(c.Result);
-            return p.Result;
+            var c = await FetchCurrentLessonList();
+            var p = await FetchPreviousLessonList();
+            p.Add(c);
+            return p;
         }
 
         private async Task GetBbsId(Lesson obj)
