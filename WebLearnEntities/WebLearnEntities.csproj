@@ -46,7 +46,6 @@
   <ItemGroup>
     <Compile Include="CrawlerBase.cs" />
     <Compile Include="CredentialManager.cs" />
-    <Compile Include="IFacade.cs" />
     <Compile Include="Lesson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

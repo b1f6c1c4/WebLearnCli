@@ -1,6 +1,9 @@
 ﻿using System;
+using System.IO;
 using System.Net;
+using System.Net.NetworkInformation;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace WebLearnEntities
 {
@@ -49,6 +52,26 @@ namespace WebLearnEntities
             req.GetRequestStream().Write(buff, 0, buff.Length);
 
             return req;
+        }
+
+        protected async Task<string> ReadToEnd(HttpWebRequest req)
+        {
+            var res = await req.GetResponseAsync();
+            try
+            {
+                using (var stream = res.GetResponseStream())
+                {
+                    if (stream == null)
+                        throw new NetworkInformationException();
+                    using (var rd = new StreamReader(stream))
+                        return rd.ReadToEnd();
+                }
+            }
+            finally
+            {
+                res.Close();
+                req.Abort();
+            }
         }
     }
 }

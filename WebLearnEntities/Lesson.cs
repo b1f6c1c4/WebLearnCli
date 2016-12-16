@@ -10,6 +10,35 @@ namespace WebLearnEntities
 
         public IReadOnlyList<Lesson> Lessons;
 
+        public Term(string value)
+        {
+            if (value.Length != 13)
+                throw new FormatException();
+
+            int year;
+            int id;
+
+            int.TryParse(value.Substring(0, 4), out year);
+
+            switch (value.Substring(9, 1))
+            {
+                case "秋":
+                    id = 0;
+                    break;
+                case "春":
+                    id = 1;
+                    break;
+                case "夏":
+                    id = 2;
+                    break;
+                default:
+                    throw new FormatException();
+            }
+
+            Year = year;
+            Index = id;
+        }
+
         public override string ToString()
         {
             switch (Index)

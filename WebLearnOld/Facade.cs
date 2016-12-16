@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Net.NetworkInformation;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -11,9 +8,9 @@ using WebLearnEntities;
 
 namespace WebLearnOld
 {
-    public class Facade : CrawlerBase, IFacade
+    public class Facade : CrawlerBase
     {
-        public void Login(WebLearnCredential cred)
+        public async Task Login(WebLearnCredential cred)
         {
             var req = Post(
                            "https://learn.tsinghua.edu.cn/MultiLanguage/lesson/teacher/loginteacher.jsp",
@@ -22,76 +19,116 @@ namespace WebLearnOld
             req.Accept = "text/html, application/xhtml+xml, */*";
             req.Referer = "http://learn.tsinghua.edu.cn/index.jsp";
 
-            var res = req.GetResponse();
-            try
-            {
-                using (var stream = res.GetResponseStream())
-                {
-                    if (stream == null)
-                        throw new NetworkInformationException();
-                    using (var rd = new StreamReader(stream))
-                    {
-                        var s = rd.ReadToEnd();
-                        if (s.IndexOf("用户名或密码错误，登录失败！", StringComparison.Ordinal) >= 0)
-                            throw new AuthenticationException();
-                    }
-                }
-            }
-            finally
-            {
-                res.Close();
-                req.Abort();
-            }
+            var s = await ReadToEnd(req);
+            if (s.IndexOf("用户名或密码错误，登录失败！", StringComparison.Ordinal) >= 0)
+                throw new AuthenticationException();
         }
 
         public async Task<Term> FetchCurrentLessonList()
         {
             var regex =
                 new Regex(
-                    @"<a.*?course_locate.jsp\?course_id=(?<id>[0-9]+).*?>\s*(?<name>.*?)\s*</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
+                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
 
             var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
 
             req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/mainstudent.jsp";
 
-            string s;
-            var res = await req.GetResponseAsync();
-            try
-            {
-                using (var stream = res.GetResponseStream())
-                {
-                    if (stream == null)
-                        throw new NetworkInformationException();
-                    using (var rd = new StreamReader(stream))
-                        s = rd.ReadToEnd();
-                }
-            }
-            finally
-            {
-                res.Close();
-                req.Abort();
-            }
+            var s = await ReadToEnd(req);
 
-            var objs = new List<Lesson>();
+            var termS = "";
+            var objs = new List<WebLearnEntities.Lesson>();
+            var tasks = new List<Task>();
 
             var matchCollection = regex.Matches(s);
             for (var i = 0; i < matchCollection.Count; i++)
             {
                 var match = matchCollection[i];
-                var obj = new Lesson();
-                obj.CourseId = match.Groups["id"].Value;
-                obj.Name = match.Groups["name"].Value;
-                objs.Add(obj);
+                termS = match.Groups["term"].Value;
+                if (string.IsNullOrEmpty(match.Groups["idx"].Value))
+                {
+                    var obj = new Lesson
+                                  {
+                                      CourseId = match.Groups["id"].Value,
+                                      Name = match.Groups["name"].Value
+                                  };
+                    tasks.Add(GetBbsId(obj));
+                    objs.Add(obj);
+                }
+                else
+                    objs.Add(
+                             new WebLearnNew.Lesson
+                                 {
+                                     CourseId = match.Groups["idx"].Value,
+                                     Name = match.Groups["name"].Value
+                                 });
             }
 
-            var tasks = objs.Select(GetBbsId);
             await Task.WhenAll(tasks);
 
-            return
-                new Term
-                    {
-                        Lessons = objs
-                    };
+            return new Term(termS) { Lessons = objs };
+        }
+
+        private async Task<List<Term>> FetchPreviousLessonList()
+        {
+            var regex =
+                new Regex(
+                    @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9]+).*?>|<a.*?coursehome/(?<idx>[0-9-]+).*?>)\s*(?<name>.*?)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>");
+
+            var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?typepage=2");
+
+            req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn";
+
+            var s = await ReadToEnd(req);
+
+            var objs = new List<Term>();
+            var rawObjs = new Dictionary<string, List<WebLearnEntities.Lesson>>();
+            var tasks = new List<Task>();
+
+            var matchCollection = regex.Matches(s);
+            for (var i = 0; i < matchCollection.Count; i++)
+            {
+                var match = matchCollection[i];
+
+                List<WebLearnEntities.Lesson> lst;
+                if (!rawObjs.TryGetValue(match.Groups["term"].Value, out lst))
+                {
+                    lst = new List<WebLearnEntities.Lesson>();
+                    rawObjs.Add(match.Groups["term"].Value, lst);
+                    objs.Add(new Term(match.Groups["term"].Value) { Lessons = lst });
+                }
+
+                if (string.IsNullOrEmpty(match.Groups["idx"].Value))
+                {
+                    var obj = new Lesson
+                                  {
+                                      CourseId = match.Groups["id"].Value,
+                                      Name = match.Groups["name"].Value
+                                  };
+                    tasks.Add(GetBbsId(obj));
+                    lst.Add(obj);
+                }
+                else
+                    lst.Add(
+                            new WebLearnNew.Lesson
+                                {
+                                    CourseId = match.Groups["idx"].Value,
+                                    Name = match.Groups["name"].Value
+                                });
+            }
+
+            await Task.WhenAll(tasks);
+
+            return objs;
+        }
+
+        public async Task<List<Term>> FetchAllLessonList()
+        {
+            var p = FetchPreviousLessonList();
+            var c = FetchCurrentLessonList();
+            await Task.WhenAll(p, c);
+            p.Result.Add(c.Result);
+            return p.Result;
         }
 
         private async Task GetBbsId(Lesson obj)
@@ -118,8 +155,6 @@ namespace WebLearnOld
             }
         }
 
-        public async Task<List<Term>> FetchAllLessonList() { throw new NotImplementedException(); }
-
         public async Task FetchLesson(WebLearnEntities.Lesson lesson)
         {
             var l = lesson as Lesson;
@@ -127,7 +162,5 @@ namespace WebLearnOld
 
             throw new NotImplementedException();
         }
-
-        public async Task SaveDocument(Document doc, string path) { throw new NotImplementedException(); }
     }
 }
