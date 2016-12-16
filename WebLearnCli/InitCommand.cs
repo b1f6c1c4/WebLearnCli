@@ -1,18 +1,12 @@
 ﻿using System;
-using System.Security.Authentication;
-using System.Threading.Tasks;
 using ManyConsole;
-using WebLearnEntities;
-using Facade = WebLearnCore.Facade;
+using WebLearnCore;
 
 namespace WebLearnCli
 {
     internal class InitCommand : ConsoleCommand
     {
-        public InitCommand()
-        {
-            IsCommand("init", "create weblearn folder");
-        }
+        public InitCommand() { IsCommand("init", "create weblearn folder"); }
 
         public override int Run(string[] remainingArguments)
         {

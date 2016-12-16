@@ -23,36 +23,28 @@ namespace WebLearnCore
             ConfigManager.Save();
         }
 
-        public static async Task<Status> Fetch(bool previous)
+        public static async Task Fetch(bool previous)
         {
             var facade = new WebLearnOld.Facade();
             await facade.Login(CredentialManager.TryGetCredential());
 
-            throw new NotImplementedException();
-
+            List<Term> terms;
             if (previous)
-            {
-                var terms = await facade.FetchAllLessonList();
-                foreach (var term in terms)
-                {
-                    Console.Out.WriteLine($"Term {term}:");
-
-                    foreach (var lesson in term.Lessons)
-                        Console.Out.WriteLine($"{lesson.Name}");
-
-                    Console.Out.WriteLine();
-                }
-            }
+                terms = await facade.FetchAllLessonList();
             else
-            {
-                var term = await facade.FetchCurrentLessonList();
-                foreach (var lesson in term.Lessons)
-                    Console.Out.WriteLine($"{lesson.Name}");
+                terms = new List<Term> { await facade.FetchCurrentLessonList() };
 
-                await facade.FetchLesson(term.Lessons[3]);
-                foreach (var announcement in term.Lessons[3].Announcements)
-                    Console.Out.WriteLine(announcement.Title);
-            }
+            ConfigManager.Load();
+
+            foreach (var term in terms)
+                foreach (var lesson in term.Lessons)
+                {
+                    var settings = ConfigManager.Config.GetLessonSetting(term.Info, lesson);
+                    if (settings.Ignore)
+                        continue;
+                }
+
+            ConfigManager.Save();
         }
     }
 }

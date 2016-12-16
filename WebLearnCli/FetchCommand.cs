@@ -19,21 +19,9 @@ namespace WebLearnCli
         {
             try
             {
-                var statusT = Facade.Fetch(m_Previous);
-                statusT.Wait();
-                var status = statusT.Result;
-                foreach (var lesson in status.Lessons)
-                {
-                    if (!lesson.HasNewAnnouncement &&
-                        !lesson.HasNewDocument &&
-                        !lesson.HasDeadLine)
-                        continue;
-
-                    Console.Out.WriteLine($"{(lesson.HasNewAnnouncement ? "A" : " ")} {(lesson.HasNewDocument ? "F" : " ")} {(lesson.HasDeadLine ? "D" : " ")} {lesson.Name}");
-                }
-
-                foreach (var deadLine in status.DeadLines)
-                    Console.Out.WriteLine(Formatter.Format(deadLine));
+                Facade.Fetch(m_Previous).Wait();
+                var cmd = new StatusCommand();
+                cmd.Run(remainingArguments);
                 return 0;
             }
             catch (AuthenticationException)

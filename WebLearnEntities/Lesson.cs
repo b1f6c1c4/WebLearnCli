@@ -3,40 +3,43 @@ using System.Collections.Generic;
 
 namespace WebLearnEntities
 {
-    public sealed class Term
+    public struct TermInfo: IComparable<TermInfo>
     {
-        public int Year { get; set; }
-        public int Index { get; set; }
+        public readonly int Year;
+        public readonly int Index;
 
-        public IReadOnlyList<Lesson> Lessons;
+        public TermInfo(int year, int index)
+        {
+            Year = year;
+            Index = index;
+        }
 
-        public Term(string value)
+        public static implicit operator TermInfo(string value)
         {
             if (value.Length != 13)
                 throw new FormatException();
 
             int year;
-            int id;
+            int index;
 
             int.TryParse(value.Substring(0, 4), out year);
 
             switch (value.Substring(9, 1))
             {
                 case "秋":
-                    id = 0;
+                    index = 0;
                     break;
                 case "春":
-                    id = 1;
+                    index = 1;
                     break;
                 case "夏":
-                    id = 2;
+                    index = 2;
                     break;
                 default:
                     throw new FormatException();
             }
 
-            Year = year;
-            Index = id;
+            return new TermInfo(year, index);
         }
 
         public override string ToString()
@@ -53,6 +56,35 @@ namespace WebLearnEntities
                     throw new InvalidOperationException();
             }
         }
+
+        public override bool Equals(object obj) => obj is TermInfo && this == (TermInfo)obj;
+        public override int GetHashCode() => Year.GetHashCode() ^ Index.GetHashCode();
+        public static bool operator ==(TermInfo x, TermInfo y) => x.Year == y.Year && x.Index == y.Index;
+        public static bool operator !=(TermInfo x, TermInfo y) => !(x == y);
+
+        public int CompareTo(TermInfo other)
+        {
+            if (Year < other.Year)
+                return -1;
+            if (Year > other.Year)
+                return 1;
+            if (Index < other.Index)
+                return -1;
+            if (Index > other.Index)
+                return 1;
+            return 0;
+        }
+
+        public static bool operator <(TermInfo e1, TermInfo e2) => e1.CompareTo(e2) < 0;
+
+        public static bool operator >(TermInfo e1, TermInfo e2) => e1.CompareTo(e2) > 0;
+    }
+
+    public sealed class Term
+    {
+        public TermInfo Info { get; set; }
+
+        public IReadOnlyList<Lesson> Lessons;
     }
 
     public abstract class Lesson

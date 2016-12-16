@@ -75,7 +75,7 @@ namespace WebLearnOld
 
             await Task.WhenAll(tasks);
 
-            return new Term(termS) { Lessons = objs };
+            return new Term { Info = termS, Lessons = objs };
         }
 
         private async Task<List<Term>> FetchPreviousLessonList()
@@ -104,7 +104,7 @@ namespace WebLearnOld
                 {
                     lst = new List<WebLearnEntities.Lesson>();
                     rawObjs.Add(match.Groups["term"].Value, lst);
-                    objs.Add(new Term(match.Groups["term"].Value) { Lessons = lst });
+                    objs.Add(new Term { Info = match.Groups["term"].Value, Lessons = lst });
                 }
 
                 if (string.IsNullOrEmpty(match.Groups["idx"].Value))
