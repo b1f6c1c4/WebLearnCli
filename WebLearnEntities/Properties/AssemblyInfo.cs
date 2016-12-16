@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // 控制。更改这些特性值可修改
 // 与程序集关联的信息。
 
-[assembly: AssemblyTitle("WebLearnCli")]
+[assembly: AssemblyTitle("WebLearnEntities")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("WebLearnCli")]
+[assembly: AssemblyProduct("WebLearnEntities")]
 [assembly: AssemblyCopyright("Copyright ©  2016")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -22,7 +22,7 @@ using System.Runtime.InteropServices;
 
 // 如果此项目向 COM 公开，则下列 GUID 用于类型库的 ID
 
-[assembly: Guid("1ab66ce8-2a90-4556-9000-c8f194fa99cf")]
+[assembly: Guid("71e79bd7-7129-4608-8919-4ba50d34e79c")]
 
 // 程序集的版本信息由下列四个值组成: 
 //

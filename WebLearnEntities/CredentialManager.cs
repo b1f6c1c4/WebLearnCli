@@ -1,10 +1,20 @@
 ﻿using CredentialManagement;
 
-namespace WebLearnCli
+namespace WebLearnEntities
 {
-    internal static class CredentialManager
+    public class WebLearnCredential
+    {
+        public string Username { get; set; }
+
+        public string Password { get; set; }
+    }
+
+    public static class CredentialManager
     {
         private const string Target = "WebLearn";
+
+        private static WebLearnCredential Convert(Credential cred) =>
+            new WebLearnCredential { Username = cred.Username, Password = cred.Password };
 
         private static Credential CredentialTemplate() =>
             new Credential
@@ -16,7 +26,7 @@ namespace WebLearnCli
 
         public static bool DropCredential() => CredentialTemplate().Delete();
 
-        private static Credential PromptForCredential()
+        private static WebLearnCredential PromptForCredential()
         {
             var prompt = new XPPrompt
                              {
@@ -31,10 +41,10 @@ namespace WebLearnCli
             cred.Password = prompt.Password;
 
             cred.Save();
-            return cred;
+            return Convert(cred);
         }
 
-        public static Credential TryGetCredential(bool force = false)
+        public static WebLearnCredential TryGetCredential(bool force = false)
         {
             if (force)
             {
@@ -44,7 +54,7 @@ namespace WebLearnCli
 
             var cred = CredentialTemplate();
             if (cred.Exists())
-                return cred.Load() ? cred : null;
+                return cred.Load() ? Convert(cred) : null;
             return PromptForCredential();
         }
     }
