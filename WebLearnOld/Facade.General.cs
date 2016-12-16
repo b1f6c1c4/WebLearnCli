@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -8,7 +7,7 @@ using WebLearnEntities;
 
 namespace WebLearnOld
 {
-    public class Facade : CrawlerBase
+    public partial class Facade : CrawlerBase
     {
         public async Task Login(WebLearnCredential cred)
         {
@@ -117,8 +116,8 @@ namespace WebLearnOld
                                 {
                                     CourseId = match.Groups["idx"].Value,
                                     Name = match.Groups["name"].Value,
-                                Index = Convert.ToInt32(match.Groups["index"].Value)
-                            });
+                                    Index = Convert.ToInt32(match.Groups["index"].Value)
+                                });
             }
 
             await Task.WhenAll(tasks);
@@ -157,14 +156,6 @@ namespace WebLearnOld
                 res.Close();
                 req.Abort();
             }
-        }
-
-        public async Task FetchLesson(WebLearnEntities.Lesson lesson)
-        {
-            var l = lesson as Lesson;
-            Debug.Assert(l != null);
-
-            throw new NotImplementedException();
         }
     }
 }

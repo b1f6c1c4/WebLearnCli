@@ -65,16 +65,13 @@ namespace WebLearnEntities
         public IReadOnlyList<Assignment> Assignments { get; set; }
     }
 
-    public abstract class Announcement
+    public class Announcement
     {
         public string Title { get; set; }
         public string Content { get; set; }
         public string From { get; set; }
 
         public DateTime? Date { get; set; }
-        public bool IsRead { get; set; }
-        public bool IsStarred { get; set; }
-        public string BbsType { get; set; }
         public string Id { get; set; }
     }
 
