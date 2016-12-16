@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLearnOld", "WebLearnOld\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLearnNew", "WebLearnNew\WebLearnNew.csproj", "{98BC1241-ED4C-4A5E-8872-7917B2B879D0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLearnCore", "WebLearnCore\WebLearnCore.csproj", "{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{98BC1241-ED4C-4A5E-8872-7917B2B879D0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{98BC1241-ED4C-4A5E-8872-7917B2B879D0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{98BC1241-ED4C-4A5E-8872-7917B2B879D0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

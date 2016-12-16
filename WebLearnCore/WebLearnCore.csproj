@@ -4,17 +4,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1AB66CE8-2A90-4556-9000-C8F194FA99CF}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WebLearnCli</RootNamespace>
-    <AssemblyName>WebLearnCli</AssemblyName>
+    <RootNamespace>WebLearnCore</RootNamespace>
+    <AssemblyName>WebLearnCore</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -24,7 +22,6 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -33,12 +30,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ManyConsole, Version=0.4.2.20, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\ManyConsole.0.4.2.20\lib\ManyConsole.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NDesk.Options, Version=0.2.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\NDesk.Options.0.2.1\lib\NDesk.Options.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -51,29 +44,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CredentialCommand.cs" />
-    <Compile Include="InitCommand.cs" />
-    <Compile Include="FetchCommand.cs" />
-    <Compile Include="Program.cs" />
+    <Compile Include="Config.cs" />
+    <Compile Include="DbHelper.cs" />
+    <Compile Include="Facade.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Status.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
     <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\WebLearnCore\WebLearnCore.csproj">
-      <Project>{c818df9b-e7ec-4cc6-95c1-bdd5a89191fb}</Project>
-      <Name>WebLearnCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebLearnEntities\WebLearnEntities.csproj">
-      <Project>{71e79bd7-7129-4608-8919-4ba50d34e79c}</Project>
-      <Name>WebLearnEntities</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WebLearnOld\WebLearnOld.csproj">
-      <Project>{014525ae-1cda-40f1-85a0-a25c90018f18}</Project>
-      <Name>WebLearnOld</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
