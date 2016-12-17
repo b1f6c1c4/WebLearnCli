@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace WebLearnCore
+namespace WebLearnCore.Crawler
 {
-    public class CrawlerNew : CrawlerBase
+    internal class CrawlerNew : CrawlerBase, ILessonExtensionCrawler
     {
         public async Task Login(string ticket)
         {

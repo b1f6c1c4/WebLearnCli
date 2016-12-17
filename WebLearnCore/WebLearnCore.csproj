@@ -51,10 +51,11 @@
   <ItemGroup>
     <Compile Include="AbbrExpand.cs" />
     <Compile Include="Config.cs" />
-    <Compile Include="CrawlerBase.cs" />
-    <Compile Include="CrawlerNew.cs" />
-    <Compile Include="CrawlerOld.General.cs" />
-    <Compile Include="CrawlerOld.Lesson.cs" />
+    <Compile Include="Crawler\CrawlerBase.cs" />
+    <Compile Include="Crawler\CrawlerFacade.cs" />
+    <Compile Include="Crawler\CrawlerNew.cs" />
+    <Compile Include="Crawler\CrawlerOld.General.cs" />
+    <Compile Include="Crawler\CrawlerOld.Lesson.cs" />
     <Compile Include="CredentialManager.cs" />
     <Compile Include="DbHelper.cs" />
     <Compile Include="Facade.cs" />

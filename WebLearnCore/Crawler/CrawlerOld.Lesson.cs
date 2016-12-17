@@ -4,47 +4,11 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace WebLearnCore
+namespace WebLearnCore.Crawler
 {
-    public partial class CrawlerOld
+    internal partial class CrawlerOld : ILessonExtensionCrawler
     {
-        public async Task<LessonExtension> FetchLesson(Lesson lesson)
-        {
-            if (lesson.Version)
-            {
-                var ann = m_NewFacade.GetAnnouncements(lesson);
-                var doc = m_NewFacade.GetDocuments(lesson);
-                var ass = m_NewFacade.GetAssignments(lesson);
-
-                await Task.WhenAll(ann, doc, ass);
-
-                return
-                    new LessonExtension
-                        {
-                            Announcements = ann.Result,
-                            Documents = doc.Result,
-                            Assignments = ass.Result
-                        };
-            }
-            else
-            {
-                var ann = GetAnnouncements(lesson);
-                var doc = GetDocuments(lesson);
-                var ass = GetAssignments(lesson);
-
-                await Task.WhenAll(ann, doc, ass);
-
-                return
-                    new LessonExtension
-                        {
-                            Announcements = ann.Result,
-                            Documents = doc.Result,
-                            Assignments = ass.Result
-                        };
-            }
-        }
-
-        private async Task<List<Announcement>> GetAnnouncements(Lesson obj)
+        public async Task<List<Announcement>> GetAnnouncements(Lesson obj)
         {
             var req =
                 Get(
@@ -97,7 +61,7 @@ namespace WebLearnCore
             obj.Content = regex.Match(s).Groups["content"].Value;
         }
 
-        private async Task<List<Document>> GetDocuments(Lesson obj)
+        public async Task<List<Document>> GetDocuments(Lesson obj)
         {
             var regex =
                 new Regex(
@@ -132,7 +96,7 @@ namespace WebLearnCore
             return lst;
         }
 
-        private async Task<List<Assignment>> GetAssignments(Lesson obj)
+        public async Task<List<Assignment>> GetAssignments(Lesson obj)
         {
             var regex =
                 new Regex(

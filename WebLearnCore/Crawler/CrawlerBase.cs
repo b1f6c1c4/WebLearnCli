@@ -7,9 +7,16 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebLearnCore
+namespace WebLearnCore.Crawler
 {
-    public abstract class CrawlerBase
+    internal interface ILessonExtensionCrawler
+    {
+        Task<List<Announcement>> GetAnnouncements(Lesson obj);
+        Task<List<Document>> GetDocuments(Lesson obj);
+        Task<List<Assignment>> GetAssignments(Lesson obj);
+    }
+
+    internal abstract class CrawlerBase
     {
         private readonly CookieContainer m_Cookie = new CookieContainer();
 

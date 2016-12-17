@@ -5,11 +5,11 @@ using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace WebLearnCore
+namespace WebLearnCore.Crawler
 {
-    public partial class CrawlerOld : CrawlerBase
+    internal partial class CrawlerOld : CrawlerBase
     {
-        private readonly CrawlerNew m_NewFacade = new CrawlerNew();
+        private string m_MyCourse;
 
         public async Task Login(WebLearnCredential cred)
         {
@@ -25,28 +25,31 @@ namespace WebLearnCore
                 throw new AuthenticationException();
         }
 
+        public async Task<string> FetchRoamingTicket()
+        {
+            var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
+            req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/mainstudent.jsp";
+
+            m_MyCourse = await ReadToEnd(req);
+
+            var regex2 =
+                new Regex(
+                    @"(?<ticket>http://learn\.cic\.tsinghua\.edu\.cn/j_spring_security_thauth_roaming_entry.*renewSession)");
+            return regex2.Match(m_MyCourse).Groups["ticket"].Value;
+        }
+
         public async Task<Term> FetchCurrentLessonList()
         {
             var regex =
                 new Regex(
                     @"(?:<a.*?course_locate\.jsp\?course_id=(?<id>[0-9a-zA-Z-]+).*?>|<a.*?coursehome/(?<idx>[0-9a-zA-Z-]+).*?>)\s*(?<name>.*?)\((?<index>[0-9]+)\)\((?<term>[0-9]{4}-[0-9]{4}\S{4})\)</a>[\s\S]*?span.*?>(?<homework>[0-9]+)</span>[\s\S]*?<span.*?>(?<note>[0-9]+)</span>[\s\S]*?<span.*?>(?<file>[0-9]+)</span>.*?</td>");
 
-            var req = Get("http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/MyCourse.jsp?language=cn");
-            req.Referer = "http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/mainstudent.jsp";
-
-            var s = await ReadToEnd(req);
-
-            var regex2 =
-                new Regex(
-                    @"(?<ticket>http://learn\.cic\.tsinghua\.edu\.cn/j_spring_security_thauth_roaming_entry.*renewSession)");
-            await m_NewFacade.Login(regex2.Match(s).Groups["ticket"].Value);
-
-            var terms = await ParseLessonList(regex, s);
+            var terms = await ParseLessonList(regex, m_MyCourse);
 
             return terms.SingleOrDefault();
         }
 
-        private async Task<List<Term>> FetchPreviousLessonList()
+        public async Task<List<Term>> FetchPreviousLessonList()
         {
             var regex =
                 new Regex(
@@ -78,7 +81,7 @@ namespace WebLearnCore
                     objs.Add(new Term { Info = termInfo, Lessons = lst });
                 }
 
-                if (String.IsNullOrEmpty(match.Groups["idx"].Value))
+                if (string.IsNullOrEmpty(match.Groups["idx"].Value))
                 {
                     var obj = new Lesson
                                   {
@@ -105,14 +108,6 @@ namespace WebLearnCore
 
             await Task.WhenAll(tasks);
             return objs;
-        }
-
-        public async Task<List<Term>> FetchAllLessonList()
-        {
-            var c = await FetchCurrentLessonList();
-            var p = await FetchPreviousLessonList();
-            p.Add(c);
-            return p;
         }
 
         private async Task GetBbsId(Lesson obj)

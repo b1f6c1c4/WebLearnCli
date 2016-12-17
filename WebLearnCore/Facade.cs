@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using WebLearnCore.Crawler;
 
 namespace WebLearnCore
 {
@@ -24,9 +25,9 @@ namespace WebLearnCore
             ConfigManager.Save();
         }
 
-        private static async Task<CrawlerOld> FetchList(bool previous)
+        private static async Task<CrawlerFacade> FetchList(bool previous)
         {
-            var facade = new CrawlerOld();
+            var facade = new CrawlerFacade();
             await facade.Login(CredentialManager.TryGetCredential());
 
             List<Term> terms;
