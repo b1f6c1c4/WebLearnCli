@@ -50,7 +50,12 @@ namespace WebLearnCore
         {
             var facade = await FetchList(previous);
 
-            await Task.WhenAll(ConfigManager.Config.Lessons.Select(l => facade.FetchLesson(l).ContinueWith(t => SaveExtension(l, t.Result))));
+            await
+                Task.WhenAll(
+                             ConfigManager.Config.Lessons.Select(
+                                                                 l =>
+                                                                 facade.FetchLesson(l)
+                                                                       .ContinueWith(t => SaveExtension(l, t.Result))));
 
             GenerateStatus();
         }

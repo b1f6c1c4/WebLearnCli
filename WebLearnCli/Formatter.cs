@@ -7,7 +7,7 @@ namespace WebLearnCli
     {
         public static string Format(DeadLine ddl)
         {
-            var remain = ddl.DueDate.AddDays(1).Subtract(DateTime.Now);
+            var remain = ddl.DueDate.Subtract(DateTime.Now);
             if (remain.TotalMilliseconds <= 0)
                 return $"{ddl.DueDate:yyyyMMdd} === ALREADY DUE === {ddl.Name}/{ddl.Title}";
             if (remain.Days >= 2)

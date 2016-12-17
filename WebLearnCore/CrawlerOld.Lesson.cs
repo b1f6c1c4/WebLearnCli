@@ -23,8 +23,8 @@ namespace WebLearnCore
                         {
                             Announcements = ann.Result,
                             Documents = doc.Result,
-                        Assignments = ass.Result
-                    };
+                            Assignments = ass.Result
+                        };
             }
             else
             {
@@ -138,7 +138,8 @@ namespace WebLearnCore
                 new Regex(
                     @"<tr[^>]*>\s*<td[^>]*><a\s+href=""hom_wk_detail\.jsp\?id=(?<id>\d+)&course_id=\d+&rec_id=(?<rec>null|\d+)"">(?<title>[^<]*)</a></td>\s*<td[^>]*>(?<start>\d{4}-\d{2}-\d{2})</td>\s*<td[^>]*>(?<due>\d{4}-\d{2}-\d{2})</td>\s*<td[^>]*>\s*(?<state>.*)\s*</td>\s*<td[^>]*>(?<size>[0-9]*\.?[0-9]*[KMG]?B)\s*</td>\s*<td[^>]*>[\s\S]*?查看批阅""\s*(?<scored>disabled=""true"")?\s*type=""button""");
             var req =
-                Get($"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id={obj.CourseId}");
+                Get(
+                    $"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id={obj.CourseId}");
             req.Referer =
                 $"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/course_locate.jsp?course_id={obj.CourseId}";
 
@@ -153,15 +154,15 @@ namespace WebLearnCore
                 var match = matchCollection[i];
                 var ass =
                     new Assignment
-                    {
-                        Id = match.Groups["id"].Value,
-                        Title = match.Groups["title"].Value,
-                        Size = ParseSize(match.Groups["size"].Value),
-                        StartDate = Convert.ToDateTime(match.Groups["start"].Value),
-                        DueDate = Convert.ToDateTime(match.Groups["due"].Value),
-                        RecId = match.Groups["rec"].Value,
-                        IsSubmitted = Purify(match.Groups["state"].Value) == "已经提交"
-                    };
+                        {
+                            Id = match.Groups["id"].Value,
+                            Title = match.Groups["title"].Value,
+                            Size = ParseSize(match.Groups["size"].Value),
+                            StartDate = Convert.ToDateTime(match.Groups["start"].Value),
+                            DueDate = Convert.ToDateTime(match.Groups["due"].Value).AddDays(1).AddSeconds(-1),
+                            RecId = match.Groups["rec"].Value,
+                            IsSubmitted = Purify(match.Groups["state"].Value) == "已经提交"
+                        };
                 tasks.Add(GetAssignment(obj, ass));
                 if (match.Groups["scored"].Length == 0)
                     tasks.Add(GetAssignmentScore(obj, ass));

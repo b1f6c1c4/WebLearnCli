@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -70,19 +71,17 @@ namespace WebLearnCore
             req.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/coursenotice/{lesson.CourseId}";
 
             var s = await ReadJsonToEnd(req);
-            return ((JProperty)s["resultList"].Children().First()).Value["childMapData"].Where(j => j.HasValues)
+            return ((JProperty)s["resultList"].Children().First()).Value["childMapData"]
+                .Where(j => j.HasValues)
                 .SelectMany(j => ((JProperty)j).Value["courseCoursewareList"])
                 .Select(
                         j =>
                         new Document
-                        {
+                            {
                                 Id = j["resourcesMappingByFileId"]["fileId"].Value<string>(),
                                 Title = j["title"].Value<string>(),
                                 Abstract = j["detail"].Value<string>(),
-                                Date =
-                                    new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc)
-                                    .AddMilliseconds(j["resourcesMappingByFileId"]["regDate"].Value<long>())
-                                    .ToLocalTime(),
+                                Date = FromUnix(j["resourcesMappingByFileId"]["regDate"].Value<long>()),
                                 FileName = j["resourcesMappingByFileId"]["fileName"].Value<string>(),
                                 IsRead = true, // TODO
                                 Size = Convert.ToDouble(j["resourcesMappingByFileId"]["fileSize"].Value<string>()),
@@ -91,6 +90,44 @@ namespace WebLearnCore
                             }).ToList();
         }
 
-        public async Task<List<Assignment>> GetAssignments(Lesson lesson) { throw new NotImplementedException(); }
+        public async Task<List<Assignment>> GetAssignments(Lesson lesson)
+        {
+            var req =
+                Get(
+                    $"http://learn.cic.tsinghua.edu.cn/b/myCourse/homework/list4Student/{lesson.CourseId}/0");
+            req.Accept = "application/json, text/javascript, */*; q=0.01";
+            req.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/homework/{lesson.CourseId}";
+
+            var s = await ReadJsonToEnd(req);
+            return s["resultList"]
+                .Children()
+                .Select(
+                        j =>
+                        new Assignment
+                            {
+                                Id = j["courseHomeworkInfo"]["homewkId"].Value<int>().ToString(),
+                                Title = j["courseHomeworkInfo"]["title"].Value<string>(),
+                                Content = j["courseHomeworkInfo"]["detail"].Value<string>(),
+                                StartDate = FromUnix(j["courseHomeworkInfo"]["beginDate"].Value<long>()),
+                                DueDate = FromUnix(j["courseHomeworkInfo"]["endDate"].Value<long>()),
+                                IsSubmitted = j["courseHomeworkRecord"]["status"].Value<string>() != "0",
+                                Size =
+                                    j["courseHomeworkRecord"]["resourcesMappingByHomewkAffix"] is JValue
+                                        ? 0
+                                        : Convert.ToDouble(
+                                                           j["courseHomeworkRecord"]
+                                                               ["resourcesMappingByHomewkAffix"]["fileSize"]
+                                                               .Value<string>()),
+                                FileUrl =
+                                    $"http://learn.cic.tsinghua.edu.cn/b/resource/downloadFile/{j["courseHomeworkInfo"]["homewkAffix"]}",
+                                FileName = j["courseHomeworkInfo"]["homewkAffixFilename"].Value<string>(),
+                                Score = j["courseHomeworkRecord"]["mark"].Value<double?>()
+                                    ?.ToString(CultureInfo.InvariantCulture),
+                                Assess = j["courseHomeworkRecord"]["replyDetail"].Value<string>()
+                            }).ToList();
+        }
+
+        private static DateTime FromUnix(long val) =>
+            new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(val).ToLocalTime();
     }
 }
