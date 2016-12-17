@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace WebLearnCore
 {
@@ -13,28 +14,32 @@ namespace WebLearnCore
             {
                 var ann = m_NewFacade.GetAnnouncements(lesson);
                 var doc = m_NewFacade.GetDocuments(lesson);
+                var ass = m_NewFacade.GetAssignments(lesson);
 
-                await Task.WhenAll(ann, doc);
+                await Task.WhenAll(ann, doc, ass);
 
                 return
                     new LessonExtension
                         {
                             Announcements = ann.Result,
-                            Documents = doc.Result
-                        };
+                            Documents = doc.Result,
+                        Assignments = ass.Result
+                    };
             }
             else
             {
                 var ann = GetAnnouncements(lesson);
                 var doc = GetDocuments(lesson);
+                var ass = GetAssignments(lesson);
 
-                await Task.WhenAll(ann, doc);
+                await Task.WhenAll(ann, doc, ass);
 
                 return
                     new LessonExtension
                         {
                             Announcements = ann.Result,
-                            Documents = doc.Result
+                            Documents = doc.Result,
+                            Assignments = ass.Result
                         };
             }
         }
@@ -64,17 +69,32 @@ namespace WebLearnCore
                                {
                                    Id = match.Groups["id"].Value,
                                    Title = match.Groups["title"].Value,
-                                   From = match.Groups["from"].Value
+                                   From = match.Groups["from"].Value,
+                                   Date = Convert.ToDateTime(match.Groups["date"].Value)
                                };
-                DateTime date;
-                if (DateTime.TryParse(match.Groups["date"].Value, out date))
-                    note.Date = date;
                 lst.Add(note);
                 tasks.Add(GetAnnouncement(obj, note));
             }
             await Task.WhenAll(tasks);
 
             return lst;
+        }
+
+        private async Task GetAnnouncement(Lesson lesson, Announcement obj)
+        {
+            var req =
+                Get(
+                    $"http://learn.tsinghua.edu.cn/MultiLanguage/public/bbs/note_reply.jsp?bbs_type=课程公告&id={obj.Id}&course_id={lesson.CourseId}");
+
+            req.Referer =
+                $"http://learn.tsinghua.edu.cn/MultiLanguage/public/bbs/note_list_student.jsp?bbs_id={lesson.BbsId}&course_id={lesson.CourseId}";
+
+            var s = await ReadToEnd(req);
+
+            var regex =
+                new Regex(
+                    @"正文</td>\s*<td.*?>(?<content>[\s\S]*?)</td>\s*</tr>\s*<tr>\s*<td class=""info_b"" colspan=""4""><img src=""/img/spacer\.gif"" /></td>\s*</tr>");
+            obj.Content = regex.Match(s).Groups["content"].Value;
         }
 
         private async Task<List<Document>> GetDocuments(Lesson obj)
@@ -101,7 +121,7 @@ namespace WebLearnCore
                             Title = match.Groups["title"].Value,
                             Abstract = match.Groups["abstract"].Value,
                             Date = Convert.ToDateTime(match.Groups["date"].Value),
-                            Size = SizeParser.Parse(match.Groups["size"].Value),
+                            Size = ParseSize(match.Groups["size"].Value),
                             IsRead = match.Groups["state"].Length == 0,
                             FileName = match.Groups["filename"].Value,
                             Url = $"http://learn.tsinghua.edu.cn/{match.Groups["url"].Value}"
@@ -112,30 +132,99 @@ namespace WebLearnCore
             return lst;
         }
 
-        private async Task GetAnnouncement(Lesson lesson, Announcement obj)
+        private async Task<List<Assignment>> GetAssignments(Lesson obj)
+        {
+            var regex =
+                new Regex(
+                    @"<tr[^>]*>\s*<td[^>]*><a\s+href=""hom_wk_detail\.jsp\?id=(?<id>\d+)&course_id=\d+&rec_id=(?<rec>null|\d+)"">(?<title>[^<]*)</a></td>\s*<td[^>]*>(?<start>\d{4}-\d{2}-\d{2})</td>\s*<td[^>]*>(?<due>\d{4}-\d{2}-\d{2})</td>\s*<td[^>]*>\s*(?<state>.*)\s*</td>\s*<td[^>]*>(?<size>[0-9]*\.?[0-9]*[KMG]?B)\s*</td>\s*<td[^>]*>[\s\S]*?查看批阅""\s*(?<scored>disabled=""true"")?\s*type=""button""");
+            var req =
+                Get($"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id={obj.CourseId}");
+            req.Referer =
+                $"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/course_locate.jsp?course_id={obj.CourseId}";
+
+            var s = await ReadToEnd(req);
+
+            var lst = new List<Assignment>();
+
+            var tasks = new List<Task>();
+            var matchCollection = regex.Matches(s);
+            for (var i = 0; i < matchCollection.Count; i++)
+            {
+                var match = matchCollection[i];
+                var ass =
+                    new Assignment
+                    {
+                        Id = match.Groups["id"].Value,
+                        Title = match.Groups["title"].Value,
+                        Size = ParseSize(match.Groups["size"].Value),
+                        StartDate = Convert.ToDateTime(match.Groups["start"].Value),
+                        DueDate = Convert.ToDateTime(match.Groups["due"].Value),
+                        RecId = match.Groups["rec"].Value,
+                        IsSubmitted = Purify(match.Groups["state"].Value) == "已经提交"
+                    };
+                tasks.Add(GetAssignment(obj, ass));
+                if (match.Groups["scored"].Length == 0)
+                    tasks.Add(GetAssignmentScore(obj, ass));
+                lst.Add(ass);
+            }
+            await Task.WhenAll(tasks);
+
+            return lst;
+        }
+
+        private async Task GetAssignment(Lesson lesson, Assignment obj)
         {
             var req =
                 Get(
-                    $"http://learn.tsinghua.edu.cn/MultiLanguage/public/bbs/note_reply.jsp?bbs_type=课程公告&id={obj.Id}&course_id={lesson.CourseId}");
+                    $"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_detail.jsp?id={obj.Id}&course_id={lesson.CourseId}&rec_id={obj.RecId}");
 
             req.Referer =
-                $"http://learn.tsinghua.edu.cn/MultiLanguage/public/bbs/note_list_student.jsp?bbs_id={lesson.BbsId}&course_id={lesson.CourseId}";
+                $"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id={lesson.CourseId}";
 
             var s = await ReadToEnd(req);
 
             var regex =
                 new Regex(
-                    @"正文</td>\s*<td.*?>(?<content>[\s\S]*?)</td>\s*</tr>\s*<tr>\s*<td class=""info_b"" colspan=""4""><img src=""/img/spacer.gif"" /></td>\s*</tr>");
-            obj.Content = regex.Match(s).Groups["content"].Value;
-        }
-    }
+                    @"<textarea[^>]*>(?<content>[\s\S]*?)</textarea>[\s\S]*?作业附件</td>\s*<td[^>]*>(?<supp>[\s\S]*?)</td>");
+            var match = regex.Match(s);
+            obj.Content = match.Groups["content"].Value;
 
-    internal static class SizeParser
-    {
-        public static double Parse(string val)
+            var regex2 =
+                new Regex(
+                    @"<a[^>]*href=""(?<url>/uploadFile/downloadFile\.jsp\?[^""]*)"">(?<file>[^<]*)</a>");
+            var match2 = regex2.Match(match.Groups["supp"].Value);
+            if (!match2.Success)
+                return;
+
+            obj.FileUrl = $"http://learn.tsinghua.edu.cn/{match2.Groups["url"].Value}";
+            obj.FileName = Purify(match2.Groups["file"].Value);
+        }
+
+        private async Task GetAssignmentScore(Lesson lesson, Assignment obj)
+        {
+            var req =
+                Get(
+                    $"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_view.jsp?id={obj.Id}&course_id={lesson.CourseId}");
+
+            req.Referer =
+                $"http://learn.tsinghua.edu.cn/MultiLanguage/lesson/student/hom_wk_brw.jsp?course_id={lesson.CourseId}";
+
+            var s = await ReadToEnd(req);
+
+            var regex =
+                new Regex(
+                    @"得分</td>\s*<td[^>]*>\s*(?<score>[\s\S]*?)\s*</td>[\s\S]*?<textarea[^>]*>(?<assess>[\s\S]*?)</textarea>");
+            var match = regex.Match(s);
+            obj.Score = Purify(match.Groups["score"].Value);
+            obj.Assess = Purify(match.Groups["assess"].Value);
+        }
+
+        private static string Purify(string val) => HttpUtility.HtmlDecode(val).Trim();
+
+        private static double ParseSize(string val)
         {
             if (val.EndsWith("B", StringComparison.OrdinalIgnoreCase))
-                return Convert.ToDouble(val.Substring(0, val.Length - 1));
+                val = val.Substring(0, val.Length - 1);
             if (val.EndsWith("K", StringComparison.OrdinalIgnoreCase))
                 return Convert.ToDouble(val.Substring(0, val.Length - 1)) * 1024;
             if (val.EndsWith("M", StringComparison.OrdinalIgnoreCase))

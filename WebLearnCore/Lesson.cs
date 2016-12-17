@@ -113,7 +113,7 @@ namespace WebLearnCore
         public string Title { get; set; }
         public string Content { get; set; }
         public string From { get; set; }
-        public DateTime? Date { get; set; }
+        public DateTime Date { get; set; }
     }
 
     public sealed class Document
@@ -122,21 +122,25 @@ namespace WebLearnCore
         public string Title { get; set; }
         public string Abstract { get; set; }
         public double Size { get; set; }
-        public DateTime? Date { get; set; }
+        public DateTime Date { get; set; }
         public bool IsRead { get; set; }
         public string FileName { get; set; }
         public string Url { get; set; }
     }
 
-    public abstract class Assignment
+    public sealed class Assignment
     {
+        public string Id { get; set; }
+        public string RecId { get; set; }
         public string Title { get; set; }
-        public DateTime? StartDate { get; set; }
-        public DateTime? DueDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime DueDate { get; set; }
         public bool IsSubmitted { get; set; }
         public double Size { get; set; }
-
-        public string Id { get; set; }
+        public string Content { get; set; }
+        public string FileUrl { get; set; }
+        public string FileName { get; set; }
         public string Score { get; set; }
+        public string Assess { get; set; }
     }
 }

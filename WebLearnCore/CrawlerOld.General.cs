@@ -78,7 +78,7 @@ namespace WebLearnCore
                     objs.Add(new Term { Info = termInfo, Lessons = lst });
                 }
 
-                if (string.IsNullOrEmpty(match.Groups["idx"].Value))
+                if (String.IsNullOrEmpty(match.Groups["idx"].Value))
                 {
                     var obj = new Lesson
                                   {

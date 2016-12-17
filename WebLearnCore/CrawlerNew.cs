@@ -90,5 +90,7 @@ namespace WebLearnCore
                                     $"http://learn.cic.tsinghua.edu.cn/b/resource/downloadFile/{j["resourcesMappingByFileId"]["fileId"].Value<string>()}"
                             }).ToList();
         }
+
+        public async Task<List<Assignment>> GetAssignments(Lesson lesson) { throw new NotImplementedException(); }
     }
 }
