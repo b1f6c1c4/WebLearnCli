@@ -127,6 +127,28 @@ namespace WebLearnCore.Crawler
                             }).ToList();
         }
 
+        public async Task DownloadDocument(Lesson lesson, Document obj)
+        {
+            var req0 = Post(obj.Url, "");
+            req0.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/courseware/{lesson.CourseId}";
+            var j = await ReadJsonToEnd(req0);
+
+            var req = Get($"http://learn.cic.tsinghua.edu.cn{j["result"].Value<string>()}");
+            await DownloadDocument(lesson, obj, req);
+        }
+
+        public async Task DownloadAssignment(Lesson lesson, Assignment obj)
+        {
+            var req0 = Post(obj.FileUrl, "");
+            req0.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/courseware/{lesson.CourseId}";
+            var j = await ReadJsonToEnd(req0);
+
+            var req = Get($"http://learn.cic.tsinghua.edu.cn{j["result"].Value<string>()}");
+            await DownloadAssignment(lesson, obj, req);
+        }
+
+        public async Task SubmitAssignment(Lesson lesson, Assignment obj) { throw new NotImplementedException(); }
+
         private static DateTime FromUnix(long val) =>
             new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(val).ToLocalTime();
     }

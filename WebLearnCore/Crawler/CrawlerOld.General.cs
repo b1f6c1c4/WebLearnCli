@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -133,5 +135,13 @@ namespace WebLearnCore.Crawler
                 req.Abort();
             }
         }
+
+        public async Task DownloadDocument(Lesson lesson, Document obj) =>
+            await DownloadDocument(lesson, obj, Get(obj.Url));
+
+        public async Task DownloadAssignment(Lesson lesson, Assignment obj) =>
+            await DownloadAssignment(lesson, obj, Get(obj.FileUrl));
+
+        public async Task SubmitAssignment(Lesson lesson, Assignment obj) { throw new NotImplementedException(); }
     }
 }

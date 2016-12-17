@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace WebLearnCore.Crawler
@@ -71,6 +72,20 @@ namespace WebLearnCore.Crawler
                         Documents = doc.Result,
                         Assignments = ass.Result
                     };
+        }
+
+        public async Task CheckoutLesson(Lesson lesson, LessonExtension ext)
+        {
+            ILessonExtensionCrawler crawler;
+            if (lesson.Version)
+                crawler = m_New;
+            else
+                crawler = m_Old;
+
+            var docs = ext.Documents.Select(o => crawler.DownloadDocument(lesson, o));
+            var asss = ext.Assignments.Select(o => crawler.DownloadAssignment(lesson, o));
+
+            await Task.WhenAll(docs.Union(asss));
         }
     }
 }

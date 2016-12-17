@@ -14,6 +14,10 @@ namespace WebLearnCore.Crawler
         Task<List<Announcement>> GetAnnouncements(Lesson obj);
         Task<List<Document>> GetDocuments(Lesson obj);
         Task<List<Assignment>> GetAssignments(Lesson obj);
+
+        Task DownloadDocument(Lesson lesson, Document obj);
+        Task DownloadAssignment(Lesson lesson, Assignment obj);
+        Task SubmitAssignment(Lesson lesson, Assignment obj);
     }
 
     internal abstract class CrawlerBase
@@ -108,6 +112,36 @@ namespace WebLearnCore.Crawler
                 res.Close();
                 req.Abort();
             }
+        }
+
+        private static async Task DownloadToFile(WebRequest req, string file)
+        {
+            var path = Path.GetDirectoryName(file);
+            if (path != null)
+                Directory.CreateDirectory(path);
+
+            var res = await req.GetResponseAsync();
+            using (var stream = File.OpenWrite(file))
+            using (var ress = res.GetResponseStream())
+                ress?.CopyTo(stream);
+        }
+
+        protected static async Task DownloadDocument(Lesson lesson, Document obj, WebRequest req)
+        {
+            var file = Path.Combine(lesson.Path, obj.FileName);
+            await DownloadToFile(req, file);
+            File.SetCreationTime(file, obj.Date);
+            File.SetLastWriteTime(file, obj.Date);
+            File.SetLastAccessTime(file, obj.Date);
+        }
+
+        protected static async Task DownloadAssignment(Lesson lesson, Assignment obj, WebRequest req)
+        {
+            var file = Path.Combine(lesson.Path, obj.FileName);
+            await DownloadToFile(req, file);
+            File.SetCreationTime(file, obj.StartDate);
+            File.SetLastWriteTime(file, obj.StartDate);
+            File.SetLastAccessTime(file, obj.StartDate);
         }
 
         private static byte[] GetMultipartFormData(Dictionary<string, object> postParameters, string boundary,

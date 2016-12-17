@@ -25,10 +25,29 @@ namespace WebLearnCore
             ConfigManager.Save();
         }
 
-        private static async Task<CrawlerFacade> FetchList(bool previous)
+        private static IEnumerable<Lesson> GetLessons(IEnumerable<string> args)
+        {
+            var lessons = new List<Lesson>();
+            foreach (var arg in args)
+            {
+                var l = AbbrExpand.GetLesson(arg);
+                if (l == null)
+                    throw new ApplicationException($"Lesson \"{arg}\" not found.");
+                lessons.Add(l);
+            }
+            return lessons;
+        }
+
+        private static async Task<CrawlerFacade> Login(bool roaming = false)
         {
             var facade = new CrawlerFacade();
-            await facade.Login(CredentialManager.TryGetCredential());
+            await facade.Login(CredentialManager.TryGetCredential(), roaming);
+            return facade;
+        }
+
+        private static async Task<CrawlerFacade> FetchList(bool previous)
+        {
+            var facade = await Login();
 
             List<Term> terms;
             if (previous)
@@ -47,34 +66,28 @@ namespace WebLearnCore
             return facade;
         }
 
-        public static async Task Fetch(bool previous)
-        {
-            var facade = await FetchList(previous);
+        public static async Task Fetch(bool previous) =>
+            await Fetch(await FetchList(previous), ConfigManager.Config.Lessons);
 
-            await
-                Task.WhenAll(
-                             ConfigManager.Config.Lessons.Select(
-                                                                 l =>
-                                                                 facade.FetchLesson(l)
-                                                                       .ContinueWith(t => SaveExtension(l, t.Result))));
+        public static async Task Fetch(bool previous, IEnumerable<string> args) =>
+            await Fetch(await FetchList(previous), GetLessons(args));
+
+        private static async Task Fetch(CrawlerFacade facade, IEnumerable<Lesson> lessons)
+        {
+            await Task.WhenAll(lessons.Select(l => facade.FetchLesson(l).ContinueWith(t => SaveExtension(l, t.Result))));
 
             GenerateStatus();
         }
 
-        public static async Task Fetch(bool previous, IEnumerable<string> args)
+        public static async Task Checkout() =>
+            await Checkout(await Login(true), ConfigManager.Config.Lessons);
+
+        public static async Task Checkout(IEnumerable<string> args) =>
+            await Checkout(await Login(true), GetLessons(args));
+
+        private static async Task Checkout(CrawlerFacade facade, IEnumerable<Lesson> lessons)
         {
-            var facade = await FetchList(previous);
-
-            var lessons = new List<Lesson>();
-            foreach (var arg in args)
-            {
-                var l = AbbrExpand.GetLesson(arg);
-                if (l == null)
-                    throw new ApplicationException($"Lesson \"{arg}\" not found.");
-                lessons.Add(l);
-            }
-
-            await Task.WhenAll(lessons.Select(l => facade.FetchLesson(l).ContinueWith(t => SaveExtension(l, t.Result))));
+            await Task.WhenAll(lessons.Select(l => facade.CheckoutLesson(l, LoadExtension(l))));
 
             GenerateStatus();
         }
@@ -92,6 +105,23 @@ namespace WebLearnCore
                               DbHelper.GetPath($"lessons/{lesson}/assignments.json"),
                               JsonConvert.SerializeObject(ext.Assignments, Formatting.Indented));
         }
+
+        private static LessonExtension LoadExtension(Lesson lesson) =>
+            new LessonExtension
+                {
+                    Announcements =
+                        JsonConvert
+                        .DeserializeObject<List<Announcement>>
+                        (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/announcements.json"))),
+                    Documents =
+                        JsonConvert
+                        .DeserializeObject<List<Document>>
+                        (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/documents.json"))),
+                    Assignments =
+                        JsonConvert
+                        .DeserializeObject<List<Assignment>>
+                        (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/assignments.json")))
+                };
 
         private static void GenerateStatus() { throw new NotImplementedException(); }
     }

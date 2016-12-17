@@ -52,6 +52,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CredentialCommand.cs" />
+    <Compile Include="CheckoutCommand.cs" />
     <Compile Include="Formatter.cs" />
     <Compile Include="StatusCommand.cs" />
     <Compile Include="InitCommand.cs" />
