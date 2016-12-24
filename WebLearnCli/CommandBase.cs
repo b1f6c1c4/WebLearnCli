@@ -37,21 +37,29 @@ namespace WebLearnCli
     internal abstract class SelectionCommandBase : CommandBase
     {
         protected bool Previous;
-        private bool m_NoCurrent;
+        protected bool NoCurrent;
 
         protected SelectionCommandBase(string command, string oneLineDescription = "")
             : base(command, oneLineDescription)
         {
             HasOption("previous", "include old lessons.", t => Previous = t != null);
-            HasOption("no-current", "exclude current lessons.", t => m_NoCurrent = t != null);
+            HasOption("no-current", "exclude current lessons.", t => NoCurrent = t != null);
+        }
+    }
+
+    internal abstract class LessonCommandBase : SelectionCommandBase
+    {
+        protected LessonCommandBase(string command, string oneLineDescription = "")
+            : base(command, oneLineDescription)
+        {
             HasAdditionalArguments(null, "lessons");
         }
 
         protected override sealed int ConcreteRun(string[] remainingArguments) =>
             ConcreteRun(
                         remainingArguments.Length == 0
-                            ? AbbrExpand.GetLessons(Previous, m_NoCurrent)
-                            : AbbrExpand.GetLessons(remainingArguments, Previous, m_NoCurrent));
+                            ? AbbrExpand.GetLessons(Previous, NoCurrent)
+                            : AbbrExpand.GetLessons(remainingArguments, Previous, NoCurrent));
 
         protected abstract int ConcreteRun(IEnumerable<Lesson> lessons);
     }

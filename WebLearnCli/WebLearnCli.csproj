@@ -54,6 +54,7 @@
     <Compile Include="AbbrExpand.cs" />
     <Compile Include="CredentialCommand.cs" />
     <Compile Include="CheckoutCommand.cs" />
+    <Compile Include="IgnoreCommand.cs" />
     <Compile Include="Formatter.cs" />
     <Compile Include="CommandBase.cs" />
     <Compile Include="StatusCommand.cs" />

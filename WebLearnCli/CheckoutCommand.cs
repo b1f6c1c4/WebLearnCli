@@ -3,7 +3,7 @@ using WebLearnCore;
 
 namespace WebLearnCli
 {
-    internal class CheckoutCommand : SelectionCommandBase
+    internal class CheckoutCommand : LessonCommandBase
     {
         public CheckoutCommand() : base("checkout", "download files") { HasAdditionalArguments(null, "lessons"); }
 

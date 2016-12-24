@@ -3,7 +3,7 @@ using WebLearnCore;
 
 namespace WebLearnCli
 {
-    internal class FetchCommand : SelectionCommandBase
+    internal class FetchCommand : LessonCommandBase
     {
         public FetchCommand() : base("fetch", "update information") { HasAdditionalArguments(null, "lessons"); }
 
