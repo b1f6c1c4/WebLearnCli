@@ -86,7 +86,7 @@ namespace WebLearnCore.Crawler
                             Abstract = match.Groups["abstract"].Value,
                             Date = Convert.ToDateTime(match.Groups["date"].Value),
                             Size = ParseSize(match.Groups["size"].Value),
-                            IsRead = match.Groups["state"].Length == 0,
+                            IsIgnored = match.Groups["state"].Length == 0,
                             FileName = match.Groups["filename"].Value,
                             Url = $"http://learn.tsinghua.edu.cn/{match.Groups["url"].Value}"
                         };

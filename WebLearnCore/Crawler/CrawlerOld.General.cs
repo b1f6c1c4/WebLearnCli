@@ -138,7 +138,7 @@ namespace WebLearnCore.Crawler
 
         public async Task DownloadDocument(Lesson lesson, Document obj)
         {
-            if (Exists(lesson, obj))
+            if (Check(lesson, obj))
                 return;
 
             await DownloadDocument(lesson, obj, Get(obj.Url));
@@ -146,9 +146,7 @@ namespace WebLearnCore.Crawler
 
         public async Task DownloadAssignment(Lesson lesson, Assignment obj)
         {
-            if (obj.FileName == null)
-                return;
-            if (Exists(lesson, obj))
+            if (Check(lesson, obj))
                 return;
 
             await DownloadAssignment(lesson, obj, Get(obj.FileUrl));

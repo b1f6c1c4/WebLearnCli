@@ -83,7 +83,7 @@ namespace WebLearnCore.Crawler
                                 Abstract = j["detail"].Value<string>(),
                                 Date = FromUnix(j["resourcesMappingByFileId"]["regDate"].Value<long>()),
                                 FileName = j["resourcesMappingByFileId"]["fileName"].Value<string>(),
-                                IsRead = true, // TODO
+                                IsIgnored = true, // TODO
                                 Size = Convert.ToDouble(j["resourcesMappingByFileId"]["fileSize"].Value<string>()),
                                 Url =
                                     $"http://learn.cic.tsinghua.edu.cn/b/resource/downloadFile/{j["resourcesMappingByFileId"]["fileId"].Value<string>()}"
@@ -134,7 +134,7 @@ namespace WebLearnCore.Crawler
 
         public async Task DownloadDocument(Lesson lesson, Document obj)
         {
-            if (Exists(lesson, obj))
+            if (Check(lesson, obj))
                 return;
 
             var req0 = Post(obj.Url, "");
@@ -147,9 +147,7 @@ namespace WebLearnCore.Crawler
 
         public async Task DownloadAssignment(Lesson lesson, Assignment obj)
         {
-            if (obj.FileName == null)
-                return;
-            if (Exists(lesson, obj))
+            if (Check(lesson, obj))
                 return;
 
             var req0 = Post(obj.FileUrl, "");

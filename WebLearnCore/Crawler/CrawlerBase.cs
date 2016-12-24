@@ -114,8 +114,11 @@ namespace WebLearnCore.Crawler
             }
         }
 
-        protected static bool Exists(Lesson lesson, Document obj)
+        protected static bool Check(Lesson lesson, Document obj)
         {
+            if (obj.IsIgnored)
+                return false;
+
             var file = Path.Combine(lesson.Path, obj.FileName);
             if (!File.Exists(file))
                 return false;
@@ -126,8 +129,14 @@ namespace WebLearnCore.Crawler
             return true;
         }
 
-        protected static bool Exists(Lesson lesson, Assignment obj)
+        protected static bool Check(Lesson lesson, Assignment obj)
         {
+            if (obj.IsIgnored)
+                return false;
+
+            if (obj.FileName == null)
+                return false;
+
             var file = Path.Combine(lesson.Path, obj.FileName);
             if (!File.Exists(file))
                 return false;

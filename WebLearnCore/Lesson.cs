@@ -114,6 +114,8 @@ namespace WebLearnCore
         public string Content { get; set; }
         public string From { get; set; }
         public DateTime Date { get; set; }
+
+        public bool IsIgnored { get; set; }
     }
 
     public sealed class Document
@@ -123,9 +125,10 @@ namespace WebLearnCore
         public string Abstract { get; set; }
         public double Size { get; set; }
         public DateTime Date { get; set; }
-        public bool IsRead { get; set; }
         public string FileName { get; set; }
         public string Url { get; set; }
+
+        public bool IsIgnored { get; set; }
     }
 
     public sealed class Assignment
@@ -142,5 +145,7 @@ namespace WebLearnCore
         public string FileName { get; set; }
         public string Score { get; set; }
         public string Assess { get; set; }
+
+        public bool IsIgnored { get; set; }
     }
 }

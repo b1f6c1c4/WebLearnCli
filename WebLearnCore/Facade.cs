@@ -123,6 +123,45 @@ namespace WebLearnCore
                         (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/assignments.json")))
                 };
 
-        private static void GenerateStatus() { throw new NotImplementedException(); }
+        private static void GenerateStatus()
+        {
+            var ddls = new List<DeadLine>();
+            var lsts = new List<LessonStatus>();
+
+            foreach (var lesson in ConfigManager.Config.Lessons)
+            {
+                var ext = LoadExtension(lesson);
+                var flag = false;
+                foreach (var assignment in ext.Assignments)
+                {
+                    if (assignment.IsIgnored)
+                        continue;
+                    flag = true;
+                    ddls.Add(
+                             new DeadLine
+                                 {
+                                     DueDate = assignment.DueDate,
+                                     Title = assignment.Title,
+                                     Name = lesson.Name
+                                 });
+                }
+                lsts.Add(
+                         new LessonStatus
+                             {
+                                 Name = lesson.Name,
+                                 HasNewAnnouncement = ext.Announcements.Any(o => !o.IsIgnored),
+                                 HasNewDocument = ext.Documents.Any(o => !o.IsIgnored),
+                                 HasDeadLine = flag
+                             });
+            }
+
+            StatusManager.Status =
+                new Status
+                    {
+                        Lessons = lsts,
+                        DeadLines = ddls
+                    };
+            StatusManager.Save();
+        }
     }
 }
