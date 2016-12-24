@@ -36,6 +36,28 @@ namespace WebLearnCore
             return new TermInfo { Year = year, Index = index };
         }
 
+        public static TermInfo Current
+        {
+            get
+            {
+                var term = new TermInfo { Year = DateTime.Now.Year };
+                if (DateTime.Now.Month <= 6)
+                {
+                    term.Year--;
+                    term.Index = 1;
+                    return term;
+                }
+                if (DateTime.Now.Month <= 8)
+                {
+                    term.Year--;
+                    term.Index = 2;
+                    return term;
+                }
+                term.Index = 0;
+                return term;
+            }
+        }
+
         public override string ToString()
         {
             switch (Index)

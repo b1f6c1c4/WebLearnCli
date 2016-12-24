@@ -28,11 +28,13 @@ namespace WebLearnCli
 
     public static class AbbrExpand
     {
-        public static Lesson GetLesson(string str)
+        public static Lesson GetLesson(string str, bool previous = false, bool noCurrent = false)
         {
             Config.Load();
 
-            var lst = Config.Inst.Lessons.Where(l => l.Name == str || l.Alias.Contains(str)).ToList();
+            var lst = GetLessons(previous, noCurrent)
+                .Where(l => l.Name == str || l.Alias.Contains(str))
+                .ToList();
             lst.Sort(
                      new ChainedComparer<Lesson>
                          {
@@ -50,11 +52,17 @@ namespace WebLearnCli
             return lst.FirstOrDefault();
         }
 
-        public static IEnumerable<Lesson> GetLessons(IEnumerable<string> args)
+        public static IEnumerable<Lesson> GetLessons(bool previous = false, bool noCurrent = false) =>
+            Config.Inst.Lessons
+                  .Where(l => previous || l.Term == TermInfo.Current)
+                  .Where(l => !noCurrent || l.Term != TermInfo.Current);
+
+        public static IEnumerable<Lesson> GetLessons(IEnumerable<string> args, bool previous = false,
+                                                     bool noCurrent = false)
         {
             foreach (var arg in args)
             {
-                var l = GetLesson(arg);
+                var l = GetLesson(arg, previous, noCurrent);
                 if (l == null)
                     throw new ApplicationException($"Lesson \"{arg}\" not found.");
                 yield return l;

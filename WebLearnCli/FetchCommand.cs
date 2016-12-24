@@ -1,43 +1,16 @@
-﻿using System;
-using System.Security.Authentication;
-using ManyConsole;
+﻿using System.Collections.Generic;
 using WebLearnCore;
 
 namespace WebLearnCli
 {
-    internal class FetchCommand : ConsoleCommand
+    internal class FetchCommand : SelectionCommandBase
     {
-        private bool m_Previous;
+        public FetchCommand() : base("fetch", "update information") { HasAdditionalArguments(null, "lessons"); }
 
-        public FetchCommand()
+        protected override int ConcreteRun(IEnumerable<Lesson> lessons)
         {
-            IsCommand("fetch", "update information");
-            HasOption("previous", "fetch old lessons.", t => m_Previous = t != null);
-            HasAdditionalArguments(null, "lessons");
-        }
-
-        public override int Run(string[] remainingArguments)
-        {
-            try
-            {
-                if (remainingArguments.Length == 0)
-                    Facade.Fetch(m_Previous, Config.Inst.Lessons).Wait();
-                else
-                    Facade.Fetch(m_Previous, AbbrExpand.GetLessons(remainingArguments)).Wait();
-                var cmd = new StatusCommand();
-                cmd.Run(remainingArguments);
-                return 0;
-            }
-            catch (AuthenticationException)
-            {
-                Console.Error.WriteLine("Invalid credential.");
-                return 1;
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine($"Unknown error: {e}");
-                return 1;
-            }
+            Facade.Fetch(Previous, lessons).Wait();
+            return 0;
         }
     }
 }

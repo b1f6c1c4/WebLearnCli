@@ -7,7 +7,18 @@ namespace WebLearnCore
 {
     public sealed class Config
     {
-        public static Config Inst { get; set; }
+        private static Config m_Inst;
+
+        public static Config Inst
+        {
+            get
+            {
+                if (m_Inst == null)
+                    Load();
+                return m_Inst;
+            }
+            set { m_Inst = value; }
+        }
 
         public static void Load() =>
             Inst = JsonConvert.DeserializeObject<Config>(File.ReadAllText(DbHelper.GetPath("config.json")));
