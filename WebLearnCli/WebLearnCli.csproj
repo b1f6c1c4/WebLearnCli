@@ -51,6 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AbbrExpand.cs" />
     <Compile Include="CredentialCommand.cs" />
     <Compile Include="CheckoutCommand.cs" />
     <Compile Include="Formatter.cs" />

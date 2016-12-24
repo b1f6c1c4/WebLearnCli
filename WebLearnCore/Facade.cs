@@ -17,25 +17,12 @@ namespace WebLearnCore
 
             Directory.CreateDirectory(DbHelper.GetPath(""));
             Directory.CreateDirectory(DbHelper.GetPath("lessons/"));
-            ConfigManager.Config =
+            Config.Inst =
                 new Config
                     {
                         Lessons = new List<Lesson>()
                     };
-            ConfigManager.Save();
-        }
-
-        private static IEnumerable<Lesson> GetLessons(IEnumerable<string> args)
-        {
-            var lessons = new List<Lesson>();
-            foreach (var arg in args)
-            {
-                var l = AbbrExpand.GetLesson(arg);
-                if (l == null)
-                    throw new ApplicationException($"Lesson \"{arg}\" not found.");
-                lessons.Add(l);
-            }
-            return lessons;
+            Config.Save();
         }
 
         private static async Task<CrawlerFacade> Login(bool roaming = false)
@@ -55,38 +42,28 @@ namespace WebLearnCore
             else
                 terms = new List<Term> { await facade.FetchCurrentLessonList() };
 
-            ConfigManager.Load();
+            Config.Load();
 
             foreach (var term in terms)
                 foreach (var lesson in term.Lessons)
-                    ConfigManager.Config.Update(term.Info, lesson);
+                    Config.Inst.Update(term.Info, lesson);
 
-            ConfigManager.Save();
+            Config.Save();
 
             return facade;
         }
 
-        public static async Task Fetch(bool previous) =>
-            await Fetch(await FetchList(previous), ConfigManager.Config.Lessons);
-
-        public static async Task Fetch(bool previous, IEnumerable<string> args) =>
-            await Fetch(await FetchList(previous), GetLessons(args));
-
-        private static async Task Fetch(CrawlerFacade facade, IEnumerable<Lesson> lessons)
+        public static async Task Fetch(bool previous, IEnumerable<Lesson> lessons)
         {
+            var facade = await FetchList(previous);
             await Task.WhenAll(lessons.Select(l => facade.FetchLesson(l).ContinueWith(t => SaveExtension(l, t.Result))));
 
             GenerateStatus();
         }
 
-        public static async Task Checkout() =>
-            await Checkout(await Login(true), ConfigManager.Config.Lessons);
-
-        public static async Task Checkout(IEnumerable<string> args) =>
-            await Checkout(await Login(true), GetLessons(args));
-
-        private static async Task Checkout(CrawlerFacade facade, IEnumerable<Lesson> lessons)
+        public static async Task Checkout(IEnumerable<Lesson> lessons)
         {
+            var facade = await Login(true);
             await Task.WhenAll(lessons.Select(l => facade.CheckoutLesson(l, LoadExtension(l))));
 
             GenerateStatus();
@@ -106,7 +83,7 @@ namespace WebLearnCore
                               JsonConvert.SerializeObject(ext.Assignments, Formatting.Indented));
         }
 
-        private static LessonExtension LoadExtension(Lesson lesson) =>
+        public static LessonExtension LoadExtension(Lesson lesson) =>
             new LessonExtension
                 {
                     Announcements =
@@ -128,7 +105,7 @@ namespace WebLearnCore
             var ddls = new List<DeadLine>();
             var lsts = new List<LessonStatus>();
 
-            foreach (var lesson in ConfigManager.Config.Lessons)
+            foreach (var lesson in Config.Inst.Lessons)
             {
                 var ext = LoadExtension(lesson);
                 var flag = false;
@@ -155,13 +132,13 @@ namespace WebLearnCore
                              });
             }
 
-            StatusManager.Status =
+            Status.Inst =
                 new Status
                     {
                         Lessons = lsts,
                         DeadLines = ddls
                     };
-            StatusManager.Save();
+            Status.Save();
         }
     }
 }

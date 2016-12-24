@@ -21,9 +21,9 @@ namespace WebLearnCli
             try
             {
                 if (remainingArguments.Length == 0)
-                    Facade.Fetch(m_Previous).Wait();
+                    Facade.Fetch(m_Previous, Config.Inst.Lessons).Wait();
                 else
-                    Facade.Fetch(m_Previous, remainingArguments).Wait();
+                    Facade.Fetch(m_Previous, AbbrExpand.GetLessons(remainingArguments)).Wait();
                 var cmd = new StatusCommand();
                 cmd.Run(remainingArguments);
                 return 0;

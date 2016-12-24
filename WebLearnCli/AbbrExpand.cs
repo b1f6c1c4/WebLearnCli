@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using WebLearnCore;
 
-namespace WebLearnCore
+namespace WebLearnCli
 {
     internal sealed class ChainedComparer<T> : IComparer<T>
     {
@@ -19,19 +20,19 @@ namespace WebLearnCore
     internal sealed class FunctorComparer<T, TOut> : IComparer<T>
     {
         public Func<T, TOut> Functor;
-        public IComparer<TOut> RawComparer;
+        public IComparer<TOut> RawComparer = Comparer<TOut>.Default;
 
         public int Compare(T x, T y) =>
-            (RawComparer ?? Comparer<TOut>.Default).Compare(Functor(x), Functor(y));
+            RawComparer.Compare(Functor(x), Functor(y));
     }
 
-    internal static class AbbrExpand
+    public static class AbbrExpand
     {
         public static Lesson GetLesson(string str)
         {
-            ConfigManager.Load();
+            Config.Load();
 
-            var lst = ConfigManager.Config.Lessons.Where(l => l.Name == str || l.Alias.Contains(str)).ToList();
+            var lst = Config.Inst.Lessons.Where(l => l.Name == str || l.Alias.Contains(str)).ToList();
             lst.Sort(
                      new ChainedComparer<Lesson>
                          {
@@ -47,6 +48,17 @@ namespace WebLearnCore
                                      }
                          });
             return lst.FirstOrDefault();
+        }
+
+        public static IEnumerable<Lesson> GetLessons(IEnumerable<string> args)
+        {
+            foreach (var arg in args)
+            {
+                var l = GetLesson(arg);
+                if (l == null)
+                    throw new ApplicationException($"Lesson \"{arg}\" not found.");
+                yield return l;
+            }
         }
     }
 }

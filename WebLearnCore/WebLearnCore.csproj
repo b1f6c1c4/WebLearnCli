@@ -49,7 +49,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AbbrExpand.cs" />
     <Compile Include="Config.cs" />
     <Compile Include="Crawler\CrawlerBase.cs" />
     <Compile Include="Crawler\CrawlerFacade.cs" />

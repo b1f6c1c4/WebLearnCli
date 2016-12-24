@@ -7,6 +7,13 @@ namespace WebLearnCore
 {
     public sealed class Status
     {
+        public static Status Inst { get; set; }
+
+        public static void Load() => Inst = JsonConvert.DeserializeObject<Status>(File.ReadAllText(DbHelper.GetPath("status.json")));
+
+        internal static void Save() =>
+            File.WriteAllText(DbHelper.GetPath("status.json"), JsonConvert.SerializeObject(Inst, Formatting.Indented));
+
         public List<LessonStatus> Lessons;
 
         public List<DeadLine> DeadLines;
@@ -27,16 +34,5 @@ namespace WebLearnCore
 
         public string Title { get; set; }
         public DateTime DueDate { get; set; }
-    }
-
-    public static class StatusManager
-    {
-        public static Status Status { get; set; }
-
-        public static void Load() =>
-            Status = JsonConvert.DeserializeObject<Status>(File.ReadAllText(DbHelper.GetPath("status.json")));
-
-        internal static void Save() =>
-            File.WriteAllText(DbHelper.GetPath("status.json"), JsonConvert.SerializeObject(Status, Formatting.Indented));
     }
 }

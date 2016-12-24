@@ -18,9 +18,9 @@ namespace WebLearnCli
             try
             {
                 if (remainingArguments.Length == 0)
-                    Facade.Checkout().Wait();
+                    Facade.Checkout(Config.Inst.Lessons).Wait();
                 else
-                    Facade.Checkout(remainingArguments).Wait();
+                    Facade.Checkout(AbbrExpand.GetLessons(remainingArguments)).Wait();
                 return 0;
             }
             catch (AuthenticationException)

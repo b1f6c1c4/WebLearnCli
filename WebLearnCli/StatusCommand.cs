@@ -12,9 +12,9 @@ namespace WebLearnCli
         {
             try
             {
-                StatusManager.Load();
+                Status.Load();
 
-                foreach (var lesson in StatusManager.Status.Lessons)
+                foreach (var lesson in Status.Inst.Lessons)
                 {
                     if (!lesson.HasNewAnnouncement &&
                         !lesson.HasNewDocument &&
@@ -25,7 +25,7 @@ namespace WebLearnCli
                                           $"{(lesson.HasNewAnnouncement ? "A" : " ")} {(lesson.HasNewDocument ? "F" : " ")} {(lesson.HasDeadLine ? "D" : " ")} {lesson.Name}");
                 }
 
-                foreach (var deadLine in StatusManager.Status.DeadLines)
+                foreach (var deadLine in Status.Inst.DeadLines)
                     Console.Out.WriteLine(Formatter.Format(deadLine));
                 return 0;
             }

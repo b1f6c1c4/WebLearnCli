@@ -5,8 +5,16 @@ using Newtonsoft.Json;
 
 namespace WebLearnCore
 {
-    internal sealed class Config
+    public sealed class Config
     {
+        public static Config Inst { get; set; }
+
+        public static void Load() =>
+            Inst = JsonConvert.DeserializeObject<Config>(File.ReadAllText(DbHelper.GetPath("config.json")));
+
+        public static void Save() =>
+            File.WriteAllText(DbHelper.GetPath("config.json"), JsonConvert.SerializeObject(Inst, Formatting.Indented));
+
         public List<Lesson> Lessons { get; set; }
 
         public void Update(TermInfo term, Lesson lesson)
@@ -38,16 +46,5 @@ namespace WebLearnCore
                     };
             Lessons.Add(s);
         }
-    }
-
-    internal static class ConfigManager
-    {
-        public static Config Config { get; set; }
-
-        public static void Load() =>
-            Config = JsonConvert.DeserializeObject<Config>(File.ReadAllText(DbHelper.GetPath("config.json")));
-
-        public static void Save() =>
-            File.WriteAllText(DbHelper.GetPath("config.json"), JsonConvert.SerializeObject(Config, Formatting.Indented));
     }
 }
