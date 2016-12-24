@@ -119,8 +119,13 @@ namespace WebLearnCore.Crawler
                                                                ["resourcesMappingByHomewkAffix"]["fileSize"]
                                                                .Value<string>()),
                                 FileUrl =
-                                    $"http://learn.cic.tsinghua.edu.cn/b/resource/downloadFile/{j["courseHomeworkInfo"]["homewkAffix"]}",
-                                FileName = j["courseHomeworkInfo"]["homewkAffixFilename"].Value<string>(),
+                                    j["courseHomeworkRecord"]["resourcesMappingByHomewkAffix"] is JValue
+                                        ? null
+                                        : $"http://learn.cic.tsinghua.edu.cn/b/resource/downloadFile/{j["courseHomeworkInfo"]["homewkAffix"]}",
+                                FileName =
+                                    j["courseHomeworkRecord"]["resourcesMappingByHomewkAffix"] is JValue
+                                        ? null
+                                        : j["courseHomeworkInfo"]["homewkAffixFilename"].Value<string>(),
                                 Score = j["courseHomeworkRecord"]["mark"].Value<double?>()
                                     ?.ToString(CultureInfo.InvariantCulture),
                                 Assess = j["courseHomeworkRecord"]["replyDetail"].Value<string>()
@@ -129,6 +134,9 @@ namespace WebLearnCore.Crawler
 
         public async Task DownloadDocument(Lesson lesson, Document obj)
         {
+            if (Exists(lesson, obj))
+                return;
+
             var req0 = Post(obj.Url, "");
             req0.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/courseware/{lesson.CourseId}";
             var j = await ReadJsonToEnd(req0);
@@ -139,6 +147,11 @@ namespace WebLearnCore.Crawler
 
         public async Task DownloadAssignment(Lesson lesson, Assignment obj)
         {
+            if (obj.FileName == null)
+                return;
+            if (Exists(lesson, obj))
+                return;
+
             var req0 = Post(obj.FileUrl, "");
             req0.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/courseware/{lesson.CourseId}";
             var j = await ReadJsonToEnd(req0);

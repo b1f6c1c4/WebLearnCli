@@ -114,6 +114,30 @@ namespace WebLearnCore.Crawler
             }
         }
 
+        protected static bool Exists(Lesson lesson, Document obj)
+        {
+            var file = Path.Combine(lesson.Path, obj.FileName);
+            if (!File.Exists(file))
+                return false;
+
+            if (File.GetLastAccessTime(file) != obj.Date)
+                return false;
+
+            return true;
+        }
+
+        protected static bool Exists(Lesson lesson, Assignment obj)
+        {
+            var file = Path.Combine(lesson.Path, obj.FileName);
+            if (!File.Exists(file))
+                return false;
+
+            if (File.GetLastAccessTime(file) != obj.StartDate)
+                return false;
+
+            return true;
+        }
+
         private static async Task DownloadToFile(WebRequest req, string file)
         {
             var path = Path.GetDirectoryName(file);
