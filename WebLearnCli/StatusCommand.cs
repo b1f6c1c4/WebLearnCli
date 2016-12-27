@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using ManyConsole;
 using WebLearnCore;
 
@@ -25,7 +26,7 @@ namespace WebLearnCli
                                           $"{(lesson.HasNewAnnouncement ? "A" : " ")} {(lesson.HasNewDocument ? "F" : " ")} {(lesson.HasDeadLine ? "D" : " ")} {lesson.Name}");
                 }
 
-                foreach (var deadLine in Status.Inst.DeadLines)
+                foreach (var deadLine in Status.Inst.DeadLines.OrderBy(d => d.DueDate))
                     Console.Out.WriteLine(Formatter.Format(deadLine));
                 return 0;
             }
