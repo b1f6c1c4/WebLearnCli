@@ -36,6 +36,25 @@ namespace WebLearnCli
         }
 
         protected abstract int ConcreteRun(string[] remainingArguments);
+
+        protected static void AskForProceed()
+        {
+            Console.WriteLine("Proceed? Y/n");
+            while (true)
+            {
+                var s = Console.ReadLine();
+                if (string.IsNullOrEmpty(s))
+                    break;
+                if ("n".Equals(s, StringComparison.OrdinalIgnoreCase))
+                    throw new OperationCanceledException();
+                if ("no".Equals(s, StringComparison.OrdinalIgnoreCase))
+                    throw new OperationCanceledException();
+                if ("y".Equals(s, StringComparison.OrdinalIgnoreCase))
+                    break;
+                if ("yes".Equals(s, StringComparison.OrdinalIgnoreCase))
+                    break;
+            }
+        }
     }
 
     internal abstract class SelectionCommandBase : CommandBase
@@ -70,21 +89,7 @@ namespace WebLearnCli
                 Console.WriteLine("To process:");
                 foreach (var lesson in lst2)
                     Console.WriteLine($"{lesson.Term} {lesson.Name}");
-                Console.WriteLine("Proceed? Y/n");
-                while (true)
-                {
-                    var s = Console.ReadLine();
-                    if (string.IsNullOrEmpty(s))
-                        break;
-                    if ("n".Equals(s, StringComparison.OrdinalIgnoreCase))
-                        throw new OperationCanceledException();
-                    if ("no".Equals(s, StringComparison.OrdinalIgnoreCase))
-                        throw new OperationCanceledException();
-                    if ("y".Equals(s, StringComparison.OrdinalIgnoreCase))
-                        break;
-                    if ("yes".Equals(s, StringComparison.OrdinalIgnoreCase))
-                        break;
-                }
+                AskForProceed();
             }
             Console.WriteLine("Processing...");
             return ConcreteRun(lst2);
@@ -110,5 +115,115 @@ namespace WebLearnCli
 <L>/<n>      select deadline by index
 /<n>         select deadline by (0 is the most urgent)");
         }
+
+        protected override sealed int ConcreteRun(string[] remainingArguments)
+        {
+            var lst = Filter.GetLessons(Previous, NoCurrent);
+            var filters = remainingArguments.Select(arg => new Filter(arg)).ToList();
+
+            var lst2 = lst.Where(l => filters.Any(f => f.IsMatch(l))).ToList();
+            var exts = lst2.Select(Facade.LoadExtension).ToList();
+            var lstSelf = lst2.Where(l => filters.Any(f => f.IsSelfMatch(l))).ToList();
+
+            var lstAnn = new List<List<Announcement>>();
+            var lstDoc = new List<List<Document>>();
+            var lstAss = new List<List<Assignment>>();
+
+            foreach (var ext in exts)
+            {
+                lstAnn.Add(
+                           filters.Select(f => f.Filt(ext.Announcements))
+                                  .Aggregate(Enumerable.Empty<Announcement>(), Enumerable.Union)
+                                  .ToList());
+                lstDoc.Add(
+                           filters.Select(f => f.Filt(ext.Documents))
+                                  .Aggregate(Enumerable.Empty<Document>(), Enumerable.Union)
+                                  .ToList());
+                lstAss.Add(
+                           filters.Select(f => f.Filt(ext.Assignments))
+                                  .Aggregate(Enumerable.Empty<Assignment>(), Enumerable.Union)
+                                  .ToList());
+            }
+
+            if (Confirm)
+            {
+                Console.WriteLine("To process:");
+                foreach (var lesson in lstSelf)
+                    Console.WriteLine($"{lesson.Term} {lesson.Name}");
+                for (var i = 0; i < lst2.Count; i++)
+                {
+                    var lesson = lst2[i];
+                    foreach (var obj in lstAnn[i])
+                        Console.WriteLine($"{lesson.Term} {lesson.Name}/a/{obj.Title}");
+                    foreach (var obj in lstDoc[i])
+                        Console.WriteLine($"{lesson.Term} {lesson.Name}/f/{obj.Title}");
+                    foreach (var obj in lstAss[i])
+                        Console.WriteLine($"{lesson.Term} {lesson.Name}/d/{obj.Title}");
+                }
+                AskForProceed();
+            }
+
+            if (lstSelf.Count > 0)
+            {
+                Console.WriteLine("Processing lessons...");
+                var ret = ConcreteRun(lstSelf);
+                if (ret != 0)
+                    return ret;
+            }
+
+            if (lstAnn.Any(l => l.Count > 0))
+            {
+                Console.WriteLine("Processing announcements...");
+                for (var i = 0; i < lst2.Count; i++)
+                {
+                    var ret = ConcreteRun(lst2[i], lstAnn[i]);
+                    if (ret != 0)
+                        return ret;
+                }
+            }
+
+            if (lstDoc.Any(l => l.Count > 0))
+            {
+                Console.WriteLine("Processing files...");
+                for (var i = 0; i < lst2.Count; i++)
+                {
+                    var ret = ConcreteRun(lst2[i], lstDoc[i]);
+                    if (ret != 0)
+                        return ret;
+                }
+            }
+
+            if (lstAss.Any(l => l.Count > 0))
+            {
+                Console.WriteLine("Processing deadlines...");
+                for (var i = 0; i < lst2.Count; i++)
+                {
+                    var ret = ConcreteRun(lst2[i], lstAss[i]);
+                    if (ret != 0)
+                        return ret;
+                }
+            }
+
+            for (var i = 0; i < lst2.Count; i++)
+            {
+                if (lstAnn[i].Count > 0
+                    || lstDoc[i].Count > 0
+                    || lstAss[i].Count > 0)
+                    Facade.SaveExtension(lst2[i], exts[i]);
+            }
+
+            Config.Save();
+            Facade.GenerateStatus();
+
+            return 0;
+        }
+
+        protected abstract int ConcreteRun(IEnumerable<Lesson> lessons);
+
+        protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Announcement> objs);
+
+        protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Document> objs);
+
+        protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Assignment> objs);
     }
 }

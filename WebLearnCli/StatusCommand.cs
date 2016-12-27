@@ -7,13 +7,20 @@ namespace WebLearnCli
 {
     internal class StatusCommand : ConsoleCommand
     {
-        public StatusCommand() { IsCommand("status", "view lessons and deadlines"); }
+        private bool m_Force;
+
+        public StatusCommand()
+        {
+            IsCommand("status", "view lessons and deadlines");
+            HasOption("f|force", "update status info", t => m_Force = t != null);
+        }
 
         public override int Run(string[] remainingArguments)
         {
             try
             {
-                Status.Load();
+                if (m_Force)
+                    Facade.GenerateStatus();
 
                 foreach (var lesson in Status.Inst.Lessons)
                 {

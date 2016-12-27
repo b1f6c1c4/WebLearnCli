@@ -66,25 +66,34 @@ namespace WebLearnCli
             return lesson.Name == m_Lesson || lesson.Alias.Contains(m_Lesson);
         }
 
+        public bool IsSelfMatch(Lesson lesson)
+        {
+            if (!IsMatch(lesson))
+                return false;
+            return !m_Announcement && !m_Document && !m_Assignment;
+        }
+
         public IEnumerable<Announcement> Filt(List<Announcement> objs) =>
-            !m_Announcement ? Enumerable.Empty<Announcement>() : Filt(objs);
+            !m_Announcement ? Enumerable.Empty<Announcement>() : DoFilt(objs);
 
         public IEnumerable<Document> Filt(List<Document> objs) =>
-            !m_Document ? Enumerable.Empty<Document>() : Filt(objs);
+            !m_Document ? Enumerable.Empty<Document>() : DoFilt(objs);
 
         public IEnumerable<Assignment> Filt(List<Assignment> objs) =>
-            !m_Assignment ? Enumerable.Empty<Assignment>() : Filt(objs);
+            !m_Assignment ? Enumerable.Empty<Assignment>() : DoFilt(objs);
 
-        private IEnumerable<Extension> Filt(IReadOnlyList<Extension> objs)
+        private IEnumerable<T> DoFilt<T>(IReadOnlyList<T> objs)
+            where T : Extension
         {
             if (m_Title != null)
             {
                 var obj = objs.SingleOrDefault(o => o.Title.Trim() == m_Title);
-                yield return obj;
+                if (obj != null)
+                    yield return obj;
                 yield break;
             }
 
-            if (m_Index == -1)
+            if (m_Index != -1)
             {
                 yield return objs[m_Index];
                 yield break;
@@ -152,6 +161,13 @@ namespace WebLearnCli
             }
             else
                 throw new FormatException(path);
+
+            if (t.Length == 1)
+            {
+                m_Title = null;
+                m_Index = -1;
+                return;
+            }
 
             if (t[1] != '/')
                 throw new FormatException(path);

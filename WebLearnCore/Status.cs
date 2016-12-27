@@ -7,7 +7,18 @@ namespace WebLearnCore
 {
     public sealed class Status
     {
-        public static Status Inst { get; set; }
+        private static Status m_Inst;
+
+        public static Status Inst
+        {
+            get
+            {
+                if (m_Inst == null)
+                    Load();
+                return m_Inst;
+            }
+            set { m_Inst = value; }
+        }
 
         public static void Load() =>
             Inst = JsonConvert.DeserializeObject<Status>(File.ReadAllText(DbHelper.GetPath("status.json")));

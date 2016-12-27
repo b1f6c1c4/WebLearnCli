@@ -69,7 +69,7 @@ namespace WebLearnCore
             GenerateStatus();
         }
 
-        private static void SaveExtension(Lesson lesson, LessonExtension ext)
+        public static void SaveExtension(Lesson lesson, LessonExtension ext)
         {
             Directory.CreateDirectory(DbHelper.GetPath($"lessons/{lesson}/"));
             File.WriteAllText(
@@ -100,13 +100,16 @@ namespace WebLearnCore
                         (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/assignments.json")))
                 };
 
-        private static void GenerateStatus()
+        public static void GenerateStatus()
         {
             var ddls = new List<DeadLine>();
             var lsts = new List<LessonStatus>();
 
             foreach (var lesson in Config.Inst.Lessons)
             {
+                if (lesson.Ignore)
+                    continue;
+
                 var ext = LoadExtension(lesson);
                 var flag = false;
                 foreach (var assignment in ext.Assignments)
