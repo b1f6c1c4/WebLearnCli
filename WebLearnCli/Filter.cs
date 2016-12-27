@@ -66,19 +66,20 @@ namespace WebLearnCli
             return lesson.Name == m_Lesson || lesson.Alias.Contains(m_Lesson);
         }
 
-        public IEnumerable<Assignment> Filt(List<Assignment> objs)
-        {
-            if (!m_Assignment)
-                return Enumerable.Empty<Assignment>();
+        public IEnumerable<Announcement> Filt(List<Announcement> objs) =>
+            !m_Announcement ? Enumerable.Empty<Announcement>() : Filt(objs);
 
-            return Filt(objs, o => o.Title);
-        }
+        public IEnumerable<Document> Filt(List<Document> objs) =>
+            !m_Document ? Enumerable.Empty<Document>() : Filt(objs);
 
-        private IEnumerable<T> Filt<T>(IReadOnlyList<T> objs, Func<T, string> title)
+        public IEnumerable<Assignment> Filt(List<Assignment> objs) =>
+            !m_Assignment ? Enumerable.Empty<Assignment>() : Filt(objs);
+
+        private IEnumerable<Extension> Filt(IReadOnlyList<Extension> objs)
         {
             if (m_Title != null)
             {
-                var obj = objs.SingleOrDefault(o => title(o).Trim() == m_Title);
+                var obj = objs.SingleOrDefault(o => o.Title.Trim() == m_Title);
                 yield return obj;
                 yield break;
             }

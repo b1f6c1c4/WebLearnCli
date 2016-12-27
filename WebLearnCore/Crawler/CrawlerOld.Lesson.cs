@@ -85,10 +85,10 @@ namespace WebLearnCore.Crawler
                             Title = match.Groups["title"].Value,
                             Abstract = match.Groups["abstract"].Value,
                             Date = Convert.ToDateTime(match.Groups["date"].Value),
-                            Size = ParseSize(match.Groups["size"].Value),
+                            FileSize = ParseSize(match.Groups["size"].Value),
                             IsIgnored = match.Groups["state"].Length == 0,
                             FileName = match.Groups["filename"].Value,
-                            Url = $"http://learn.tsinghua.edu.cn/{match.Groups["url"].Value}"
+                            FileUrl = $"http://learn.tsinghua.edu.cn/{match.Groups["url"].Value}"
                         };
                 lst.Add(doc);
             }
@@ -121,8 +121,8 @@ namespace WebLearnCore.Crawler
                         {
                             Id = match.Groups["id"].Value,
                             Title = match.Groups["title"].Value,
-                            Size = ParseSize(match.Groups["size"].Value),
-                            StartDate = Convert.ToDateTime(match.Groups["start"].Value),
+                            FileSize = ParseSize(match.Groups["size"].Value),
+                            Date = Convert.ToDateTime(match.Groups["start"].Value),
                             DueDate = Convert.ToDateTime(match.Groups["due"].Value).AddDays(1).AddSeconds(-1),
                             RecId = match.Groups["rec"].Value,
                             IsSubmitted = Purify(match.Groups["state"].Value) == "已经提交"

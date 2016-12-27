@@ -82,8 +82,8 @@ namespace WebLearnCore.Crawler
             else
                 crawler = m_Old;
 
-            var docs = ext.Documents.Select(o => crawler.DownloadDocument(lesson, o));
-            var asss = ext.Assignments.Select(o => crawler.DownloadAssignment(lesson, o));
+            var docs = ext.Documents.Select(o => crawler.DownloadFile(lesson, o));
+            var asss = ext.Assignments.Select(o => crawler.DownloadFile(lesson, o));
 
             await Task.WhenAll(docs.Union(asss));
         }

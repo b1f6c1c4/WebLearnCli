@@ -14,7 +14,7 @@ namespace WebLearnCli
         protected CommandBase(string command, string oneLineDescription = "")
         {
             IsCommand(command, oneLineDescription);
-            HasOption("confirm", "ask before proceed", t=> Confirm = t != null);
+            HasOption("confirm", "ask before proceed", t => Confirm = t != null);
         }
 
         public override int Run(string[] remainingArguments)
@@ -62,7 +62,9 @@ namespace WebLearnCli
         protected override sealed int ConcreteRun(string[] remainingArguments)
         {
             var lst = Filter.GetLessons(Previous, NoCurrent).ToList();
-            var lst2 = remainingArguments.Length != 0 ? remainingArguments.Select(arg => Filter.GetLesson(arg, lst)).ToList() : lst;
+            var lst2 = remainingArguments.Length != 0
+                           ? remainingArguments.Select(arg => Filter.GetLesson(arg, lst)).ToList()
+                           : lst;
             if (Confirm)
             {
                 Console.WriteLine("To process:");

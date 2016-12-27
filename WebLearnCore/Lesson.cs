@@ -129,45 +129,42 @@ namespace WebLearnCore
         public List<Assignment> Assignments { get; set; }
     }
 
-    public sealed class Announcement
+    public abstract class Extension
+    {
+        public string Title { get; set; }
+        public bool IsIgnored { get; set; }
+    }
+
+    public sealed class Announcement : Extension
     {
         public string Id { get; set; }
-        public string Title { get; set; }
         public string Content { get; set; }
         public string From { get; set; }
         public DateTime Date { get; set; }
-
-        public bool IsIgnored { get; set; }
     }
 
-    public sealed class Document
+    public abstract class ExtensionWithFile : Extension
+    {
+        public double FileSize { get; set; }
+        public string FileUrl { get; set; }
+        public string FileName { get; set; }
+        public DateTime Date { get; set; }
+    }
+
+    public sealed class Document : ExtensionWithFile
     {
         public string Id { get; set; }
-        public string Title { get; set; }
         public string Abstract { get; set; }
-        public double Size { get; set; }
-        public DateTime Date { get; set; }
-        public string FileName { get; set; }
-        public string Url { get; set; }
-
-        public bool IsIgnored { get; set; }
     }
 
-    public sealed class Assignment
+    public sealed class Assignment : ExtensionWithFile
     {
         public string Id { get; set; }
         public string RecId { get; set; }
-        public string Title { get; set; }
-        public DateTime StartDate { get; set; }
         public DateTime DueDate { get; set; }
         public bool IsSubmitted { get; set; }
-        public double Size { get; set; }
         public string Content { get; set; }
-        public string FileUrl { get; set; }
-        public string FileName { get; set; }
         public string Score { get; set; }
         public string Assess { get; set; }
-
-        public bool IsIgnored { get; set; }
     }
 }

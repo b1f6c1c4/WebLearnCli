@@ -84,8 +84,8 @@ namespace WebLearnCore.Crawler
                                 Date = FromUnix(j["resourcesMappingByFileId"]["regDate"].Value<long>()),
                                 FileName = j["resourcesMappingByFileId"]["fileName"].Value<string>(),
                                 IsIgnored = true, // TODO
-                                Size = Convert.ToDouble(j["resourcesMappingByFileId"]["fileSize"].Value<string>()),
-                                Url =
+                                FileSize = Convert.ToDouble(j["resourcesMappingByFileId"]["fileSize"].Value<string>()),
+                                FileUrl =
                                     $"http://learn.cic.tsinghua.edu.cn/b/resource/downloadFile/{j["resourcesMappingByFileId"]["fileId"].Value<string>()}"
                             }).ToList();
         }
@@ -108,10 +108,10 @@ namespace WebLearnCore.Crawler
                                 Id = j["courseHomeworkInfo"]["homewkId"].Value<int>().ToString(),
                                 Title = j["courseHomeworkInfo"]["title"].Value<string>(),
                                 Content = j["courseHomeworkInfo"]["detail"].Value<string>(),
-                                StartDate = FromUnix(j["courseHomeworkInfo"]["beginDate"].Value<long>()),
+                                Date = FromUnix(j["courseHomeworkInfo"]["beginDate"].Value<long>()),
                                 DueDate = FromUnix(j["courseHomeworkInfo"]["endDate"].Value<long>()),
                                 IsSubmitted = j["courseHomeworkRecord"]["status"].Value<string>() != "0",
-                                Size =
+                                FileSize =
                                     j["courseHomeworkRecord"]["resourcesMappingByHomewkAffix"] is JValue
                                         ? 0
                                         : Convert.ToDouble(
@@ -132,20 +132,7 @@ namespace WebLearnCore.Crawler
                             }).ToList();
         }
 
-        public async Task DownloadDocument(Lesson lesson, Document obj)
-        {
-            if (Check(lesson, obj))
-                return;
-
-            var req0 = Post(obj.Url, "");
-            req0.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/courseware/{lesson.CourseId}";
-            var j = await ReadJsonToEnd(req0);
-
-            var req = Get($"http://learn.cic.tsinghua.edu.cn{j["result"].Value<string>()}");
-            await DownloadDocument(lesson, obj, req);
-        }
-
-        public async Task DownloadAssignment(Lesson lesson, Assignment obj)
+        public async Task DownloadFile(Lesson lesson, ExtensionWithFile obj)
         {
             if (Check(lesson, obj))
                 return;
@@ -155,7 +142,7 @@ namespace WebLearnCore.Crawler
             var j = await ReadJsonToEnd(req0);
 
             var req = Get($"http://learn.cic.tsinghua.edu.cn{j["result"].Value<string>()}");
-            await DownloadAssignment(lesson, obj, req);
+            await DownloadFile(lesson, obj, req);
         }
 
         public async Task SubmitAssignment(Lesson lesson, Assignment obj) { throw new NotImplementedException(); }

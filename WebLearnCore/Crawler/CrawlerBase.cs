@@ -15,8 +15,7 @@ namespace WebLearnCore.Crawler
         Task<List<Document>> GetDocuments(Lesson obj);
         Task<List<Assignment>> GetAssignments(Lesson obj);
 
-        Task DownloadDocument(Lesson lesson, Document obj);
-        Task DownloadAssignment(Lesson lesson, Assignment obj);
+        Task DownloadFile(Lesson lesson, ExtensionWithFile obj);
         Task SubmitAssignment(Lesson lesson, Assignment obj);
     }
 
@@ -114,7 +113,7 @@ namespace WebLearnCore.Crawler
             }
         }
 
-        protected static bool Check(Lesson lesson, Document obj)
+        protected static bool Check(Lesson lesson, ExtensionWithFile obj)
         {
             if (obj.IsIgnored)
                 return false;
@@ -124,24 +123,6 @@ namespace WebLearnCore.Crawler
                 return false;
 
             if (File.GetLastAccessTime(file) != obj.Date)
-                return false;
-
-            return true;
-        }
-
-        protected static bool Check(Lesson lesson, Assignment obj)
-        {
-            if (obj.IsIgnored)
-                return false;
-
-            if (obj.FileName == null)
-                return false;
-
-            var file = Path.Combine(lesson.Path, obj.FileName);
-            if (!File.Exists(file))
-                return false;
-
-            if (File.GetLastAccessTime(file) != obj.StartDate)
                 return false;
 
             return true;
@@ -159,22 +140,13 @@ namespace WebLearnCore.Crawler
                 ress?.CopyTo(stream);
         }
 
-        protected static async Task DownloadDocument(Lesson lesson, Document obj, WebRequest req)
+        protected static async Task DownloadFile(Lesson lesson, ExtensionWithFile obj, WebRequest req)
         {
             var file = Path.Combine(lesson.Path, obj.FileName);
             await DownloadToFile(req, file);
             File.SetCreationTime(file, obj.Date);
             File.SetLastWriteTime(file, obj.Date);
             File.SetLastAccessTime(file, obj.Date);
-        }
-
-        protected static async Task DownloadAssignment(Lesson lesson, Assignment obj, WebRequest req)
-        {
-            var file = Path.Combine(lesson.Path, obj.FileName);
-            await DownloadToFile(req, file);
-            File.SetCreationTime(file, obj.StartDate);
-            File.SetLastWriteTime(file, obj.StartDate);
-            File.SetLastAccessTime(file, obj.StartDate);
         }
 
         private static byte[] GetMultipartFormData(Dictionary<string, object> postParameters, string boundary,

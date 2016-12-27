@@ -134,20 +134,12 @@ namespace WebLearnCore.Crawler
             }
         }
 
-        public async Task DownloadDocument(Lesson lesson, Document obj)
+        public async Task DownloadFile(Lesson lesson, ExtensionWithFile obj)
         {
             if (Check(lesson, obj))
                 return;
 
-            await DownloadDocument(lesson, obj, Get(obj.Url));
-        }
-
-        public async Task DownloadAssignment(Lesson lesson, Assignment obj)
-        {
-            if (Check(lesson, obj))
-                return;
-
-            await DownloadAssignment(lesson, obj, Get(obj.FileUrl));
+            await DownloadFile(lesson, obj, Get(obj.FileUrl));
         }
 
         public async Task SubmitAssignment(Lesson lesson, Assignment obj) { throw new NotImplementedException(); }
