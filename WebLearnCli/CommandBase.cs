@@ -84,13 +84,13 @@ namespace WebLearnCli
             var lst2 = remainingArguments.Length != 0
                            ? remainingArguments.Select(arg => Filter.GetLesson(arg, lst)).ToList()
                            : lst;
+
+            Console.WriteLine("To process:");
+            foreach (var lesson in lst2)
+                Console.WriteLine($"{lesson.Term} {lesson.Name}");
             if (Confirm)
-            {
-                Console.WriteLine("To process:");
-                foreach (var lesson in lst2)
-                    Console.WriteLine($"{lesson.Term} {lesson.Name}");
                 AskForProceed();
-            }
+
             Console.WriteLine("Processing...");
             return ConcreteRun(lst2);
         }
@@ -145,23 +145,21 @@ namespace WebLearnCli
                                   .ToList());
             }
 
-            if (Confirm)
+            Console.WriteLine("To process:");
+            foreach (var lesson in lstSelf)
+                Console.WriteLine($"{lesson.Term} {lesson.Name}");
+            for (var i = 0; i < lst2.Count; i++)
             {
-                Console.WriteLine("To process:");
-                foreach (var lesson in lstSelf)
-                    Console.WriteLine($"{lesson.Term} {lesson.Name}");
-                for (var i = 0; i < lst2.Count; i++)
-                {
-                    var lesson = lst2[i];
-                    foreach (var obj in lstAnn[i])
-                        Console.WriteLine($"{lesson.Term} {lesson.Name}/a/{obj.Title}");
-                    foreach (var obj in lstDoc[i])
-                        Console.WriteLine($"{lesson.Term} {lesson.Name}/f/{obj.Title}");
-                    foreach (var obj in lstAss[i])
-                        Console.WriteLine($"{lesson.Term} {lesson.Name}/d/{obj.Title}");
-                }
-                AskForProceed();
+                var lesson = lst2[i];
+                foreach (var obj in lstAnn[i])
+                    Console.WriteLine($"{lesson.Term} {lesson.Name}/a/{obj.Title}");
+                foreach (var obj in lstDoc[i])
+                    Console.WriteLine($"{lesson.Term} {lesson.Name}/f/{obj.Title}");
+                foreach (var obj in lstAss[i])
+                    Console.WriteLine($"{lesson.Term} {lesson.Name}/d/{obj.Title}");
             }
+            if (Confirm)
+                AskForProceed();
 
             if (lstSelf.Count > 0)
             {
@@ -205,12 +203,10 @@ namespace WebLearnCli
             }
 
             for (var i = 0; i < lst2.Count; i++)
-            {
-                if (lstAnn[i].Count > 0
-                    || lstDoc[i].Count > 0
-                    || lstAss[i].Count > 0)
+                if (lstAnn[i].Count > 0 ||
+                    lstDoc[i].Count > 0 ||
+                    lstAss[i].Count > 0)
                     Facade.SaveExtension(lst2[i], exts[i]);
-            }
 
             Config.Save();
             Facade.GenerateStatus();
@@ -225,5 +221,21 @@ namespace WebLearnCli
         protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Document> objs);
 
         protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Assignment> objs);
+    }
+
+    internal abstract class PathExtCommandBase : PathCommandBase
+    {
+        protected PathExtCommandBase(string command, string oneLineDescription = "") : base(command, oneLineDescription) { }
+
+        protected override sealed int ConcreteRun(Lesson lesson, IEnumerable<Announcement> objs) =>
+            ConcreteRun(lesson, objs);
+
+        protected override sealed int ConcreteRun(Lesson lesson, IEnumerable<Document> objs) =>
+            ConcreteRun(lesson, objs);
+
+        protected override sealed int ConcreteRun(Lesson lesson, IEnumerable<Assignment> objs) =>
+            ConcreteRun(lesson, objs);
+
+        protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Extension> objs);
     }
 }
