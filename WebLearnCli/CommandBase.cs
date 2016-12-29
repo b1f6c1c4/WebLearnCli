@@ -174,7 +174,7 @@ namespace WebLearnCli
                 Console.WriteLine("Processing announcements...");
                 for (var i = 0; i < lst2.Count; i++)
                 {
-                    var ret = ConcreteRun(lst2[i], lstAnn[i]);
+                    var ret = ConcreteRun(lst2[i], exts[i], lstAnn[i]);
                     if (ret != 0)
                         return ret;
                 }
@@ -185,7 +185,7 @@ namespace WebLearnCli
                 Console.WriteLine("Processing files...");
                 for (var i = 0; i < lst2.Count; i++)
                 {
-                    var ret = ConcreteRun(lst2[i], lstDoc[i]);
+                    var ret = ConcreteRun(lst2[i], exts[i], lstDoc[i]);
                     if (ret != 0)
                         return ret;
                 }
@@ -196,7 +196,7 @@ namespace WebLearnCli
                 Console.WriteLine("Processing deadlines...");
                 for (var i = 0; i < lst2.Count; i++)
                 {
-                    var ret = ConcreteRun(lst2[i], lstAss[i]);
+                    var ret = ConcreteRun(lst2[i], exts[i], lstAss[i]);
                     if (ret != 0)
                         return ret;
                 }
@@ -216,24 +216,24 @@ namespace WebLearnCli
 
         protected abstract int ConcreteRun(IEnumerable<Lesson> lessons);
 
-        protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Announcement> objs);
+        protected abstract int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Announcement> objs);
 
-        protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Document> objs);
+        protected abstract int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Document> objs);
 
-        protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Assignment> objs);
+        protected abstract int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Assignment> objs);
     }
 
     internal abstract class PathExtCommandBase : PathCommandBase
     {
         protected PathExtCommandBase(string command, string oneLineDescription = "") : base(command, oneLineDescription) { }
 
-        protected override sealed int ConcreteRun(Lesson lesson, IEnumerable<Announcement> objs) =>
+        protected override sealed int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Announcement> objs) =>
             ConcreteRun(lesson, objs);
 
-        protected override sealed int ConcreteRun(Lesson lesson, IEnumerable<Document> objs) =>
+        protected override sealed int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Document> objs) =>
             ConcreteRun(lesson, objs);
 
-        protected override sealed int ConcreteRun(Lesson lesson, IEnumerable<Assignment> objs) =>
+        protected override sealed int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Assignment> objs) =>
             ConcreteRun(lesson, objs);
 
         protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Extension> objs);

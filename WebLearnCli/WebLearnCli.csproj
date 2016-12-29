@@ -57,6 +57,7 @@
     <Compile Include="IgnoreCommand.cs" />
     <Compile Include="Formatter.cs" />
     <Compile Include="CommandBase.cs" />
+    <Compile Include="ShowCommand.cs" />
     <Compile Include="StatusCommand.cs" />
     <Compile Include="InitCommand.cs" />
     <Compile Include="FetchCommand.cs" />
