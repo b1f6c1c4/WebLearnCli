@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using WebLearnCore.Crawler;
 
 namespace WebLearnCore
@@ -56,7 +55,7 @@ namespace WebLearnCore
         public static async Task Fetch(bool previous, IEnumerable<Lesson> lessons)
         {
             var facade = await FetchList(previous);
-            await Task.WhenAll(lessons.Select(l => facade.FetchLesson(l).ContinueWith(t => t.Result.Save())));
+            await Task.WhenAll(lessons.Select(l => facade.FetchLesson(l).Then(e => e.Save())));
 
             GenerateStatus();
         }
@@ -64,7 +63,7 @@ namespace WebLearnCore
         public static async Task Checkout(IEnumerable<Lesson> lessons)
         {
             var facade = await Login(true);
-            await Task.WhenAll(lessons.Select(l => facade.CheckoutLesson(LessonExtension.From(l))));
+            await Task.WhenAll(lessons.Select(l => facade.CheckoutLesson(l.Extension())));
 
             GenerateStatus();
         }
@@ -79,7 +78,7 @@ namespace WebLearnCore
                 if (lesson.Ignore)
                     continue;
 
-                var ext = LessonExtension.From(lesson);
+                var ext = lesson.Extension();
                 var flag = false;
                 foreach (var assignment in ext.Assignments)
                 {

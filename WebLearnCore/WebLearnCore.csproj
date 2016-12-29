@@ -59,6 +59,7 @@
     <Compile Include="DbHelper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Facade.cs" />
+    <Compile Include="Helper.cs" />
     <Compile Include="Lesson.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Status.cs" />

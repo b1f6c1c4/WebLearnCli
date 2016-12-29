@@ -60,11 +60,11 @@ namespace WebLearnCore.Crawler
                 crawler = m_Old;
 
 
-            var ext = LessonExtension.From(lesson);
+            var ext = lesson.Extension();
 
-            var ann = crawler.GetAnnouncements(lesson).ContinueWith(t => ext.Merge(t.Result));
-            var doc = crawler.GetDocuments(lesson).ContinueWith(t => ext.Merge(t.Result));
-            var ass = crawler.GetAssignments(lesson).ContinueWith(t => ext.Merge(t.Result));
+            var ann = crawler.GetAnnouncements(lesson).Then(ext.Merge);
+            var doc = crawler.GetDocuments(lesson).Then(ext.Merge);
+            var ass = crawler.GetAssignments(lesson).Then(ext.Merge);
 
             await Task.WhenAll(ann, doc, ass);
 
