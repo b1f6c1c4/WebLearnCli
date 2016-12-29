@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace WebLearnCore
 {
@@ -41,32 +40,17 @@ namespace WebLearnCore
 
         private void Load()
         {
-            Announcements =
-                JsonConvert
-                    .DeserializeObject<List<Announcement>>
-                    (File.ReadAllText(DbHelper.GetPath($"lessons/{Lesson}/announcements.json")));
-            Documents =
-                JsonConvert
-                    .DeserializeObject<List<Document>>
-                    (File.ReadAllText(DbHelper.GetPath($"lessons/{Lesson}/documents.json")));
-            Assignments =
-                JsonConvert
-                    .DeserializeObject<List<Assignment>>
-                    (File.ReadAllText(DbHelper.GetPath($"lessons/{Lesson}/assignments.json")));
+            Announcements = $"lessons/{Lesson}/announcements.json".InDb().LoadJson<List<Announcement>>();
+            Documents = $"lessons/{Lesson}/documents.json".InDb().LoadJson<List<Document>>();
+            Assignments = $"lessons/{Lesson}/assignments.json".InDb().LoadJson<List<Assignment>>();
         }
 
         public void Save()
         {
-            Directory.CreateDirectory(DbHelper.GetPath($"lessons/{Lesson}/"));
-            File.WriteAllText(
-                              DbHelper.GetPath($"lessons/{Lesson}/announcements.json"),
-                              JsonConvert.SerializeObject(Announcements, Formatting.Indented));
-            File.WriteAllText(
-                              DbHelper.GetPath($"lessons /{Lesson}/documents.json"),
-                              JsonConvert.SerializeObject(Documents, Formatting.Indented));
-            File.WriteAllText(
-                              DbHelper.GetPath($"lessons/{Lesson}/assignments.json"),
-                              JsonConvert.SerializeObject(Assignments, Formatting.Indented));
+            Directory.CreateDirectory($"lessons/{Lesson}/".InDb());
+            $"lessons/{Lesson}/announcements.json".InDb().SaveJson(Announcements);
+            $"lessons/{Lesson}/documents.json".InDb().SaveJson(Documents);
+            $"lessons/{Lesson}/assignments.json".InDb().SaveJson(Assignments);
         }
 
         public void Merge(IEnumerable<Announcement> objs) =>

@@ -11,11 +11,11 @@ namespace WebLearnCore
     {
         public static void Init()
         {
-            if (Directory.Exists(DbHelper.GetPath("")))
+            if (Directory.Exists("".InDb()))
                 throw new ApplicationException("WebLearn folder already exists.");
 
-            Directory.CreateDirectory(DbHelper.GetPath(""));
-            Directory.CreateDirectory(DbHelper.GetPath("lessons/"));
+            Directory.CreateDirectory("".InDb());
+            Directory.CreateDirectory("lessons/".InDb());
             Config.Inst =
                 new Config
                     {

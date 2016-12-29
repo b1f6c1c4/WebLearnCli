@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
 
 namespace WebLearnCore
 {
@@ -20,11 +18,9 @@ namespace WebLearnCore
             set { m_Inst = value; }
         }
 
-        public static void Load() =>
-            Inst = JsonConvert.DeserializeObject<Config>(File.ReadAllText(DbHelper.GetPath("config.json")));
+        public static void Load() => Inst = "config.json".InDb().LoadJson<Config>();
 
-        public static void Save() =>
-            File.WriteAllText(DbHelper.GetPath("config.json"), JsonConvert.SerializeObject(Inst, Formatting.Indented));
+        public static void Save() => "config.json".InDb().SaveJson(Inst);
 
         public List<Lesson> Lessons { get; set; }
 

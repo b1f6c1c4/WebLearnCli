@@ -56,7 +56,6 @@
     <Compile Include="Crawler\CrawlerOld.General.cs" />
     <Compile Include="Crawler\CrawlerOld.Lesson.cs" />
     <Compile Include="CredentialManager.cs" />
-    <Compile Include="DbHelper.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Facade.cs" />
     <Compile Include="Helper.cs" />
