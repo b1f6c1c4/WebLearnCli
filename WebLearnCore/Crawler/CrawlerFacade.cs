@@ -59,31 +59,28 @@ namespace WebLearnCore.Crawler
             else
                 crawler = m_Old;
 
-            var ann = crawler.GetAnnouncements(lesson);
-            var doc = crawler.GetDocuments(lesson);
-            var ass = crawler.GetAssignments(lesson);
+
+            var ext = LessonExtension.From(lesson);
+
+            var ann = crawler.GetAnnouncements(lesson).ContinueWith(t => ext.Merge(t.Result));
+            var doc = crawler.GetDocuments(lesson).ContinueWith(t => ext.Merge(t.Result));
+            var ass = crawler.GetAssignments(lesson).ContinueWith(t => ext.Merge(t.Result));
 
             await Task.WhenAll(ann, doc, ass);
 
-            return
-                new LessonExtension
-                    {
-                        Announcements = ann.Result,
-                        Documents = doc.Result,
-                        Assignments = ass.Result
-                    };
+            return ext;
         }
 
-        public async Task CheckoutLesson(Lesson lesson, LessonExtension ext)
+        public async Task CheckoutLesson(LessonExtension ext)
         {
             ILessonExtensionCrawler crawler;
-            if (lesson.Version)
+            if (ext.Lesson.Version)
                 crawler = m_New;
             else
                 crawler = m_Old;
 
-            var docs = ext.Documents.Select(o => crawler.DownloadFile(lesson, o));
-            var asss = ext.Assignments.Select(o => crawler.DownloadFile(lesson, o));
+            var docs = ext.Documents.Select(o => crawler.DownloadFile(ext.Lesson, o));
+            var asss = ext.Assignments.Select(o => crawler.DownloadFile(ext.Lesson, o));
 
             await Task.WhenAll(docs.Union(asss));
         }

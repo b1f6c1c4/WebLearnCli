@@ -122,7 +122,7 @@ namespace WebLearnCli
             var filters = remainingArguments.Select(arg => new Filter(arg)).ToList();
 
             var lst2 = lst.Where(l => filters.Any(f => f.IsMatch(l))).ToList();
-            var exts = lst2.Select(Facade.LoadExtension).ToList();
+            var exts = lst2.Select(LessonExtension.From).ToList();
             var lstSelf = lst2.Where(l => filters.Any(f => f.IsSelfMatch(l))).ToList();
 
             var lstAnn = new List<List<Announcement>>();
@@ -206,7 +206,7 @@ namespace WebLearnCli
                 if (lstAnn[i].Count > 0 ||
                     lstDoc[i].Count > 0 ||
                     lstAss[i].Count > 0)
-                    Facade.SaveExtension(lst2[i], exts[i]);
+                    exts[i].Save();
 
             Config.Save();
             Facade.GenerateStatus();

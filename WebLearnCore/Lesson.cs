@@ -122,13 +122,6 @@ namespace WebLearnCore
             $"{Term}/{Name}({Index})";
     }
 
-    public sealed class LessonExtension
-    {
-        public List<Announcement> Announcements { get; set; }
-        public List<Document> Documents { get; set; }
-        public List<Assignment> Assignments { get; set; }
-    }
-
     public abstract class Extension
     {
         public string Title { get; set; }

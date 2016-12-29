@@ -56,7 +56,7 @@ namespace WebLearnCore
         public static async Task Fetch(bool previous, IEnumerable<Lesson> lessons)
         {
             var facade = await FetchList(previous);
-            await Task.WhenAll(lessons.Select(l => facade.FetchLesson(l).ContinueWith(t => SaveExtension(l, t.Result))));
+            await Task.WhenAll(lessons.Select(l => facade.FetchLesson(l).ContinueWith(t => t.Result.Save())));
 
             GenerateStatus();
         }
@@ -64,41 +64,10 @@ namespace WebLearnCore
         public static async Task Checkout(IEnumerable<Lesson> lessons)
         {
             var facade = await Login(true);
-            await Task.WhenAll(lessons.Select(l => facade.CheckoutLesson(l, LoadExtension(l))));
+            await Task.WhenAll(lessons.Select(l => facade.CheckoutLesson(LessonExtension.From(l))));
 
             GenerateStatus();
         }
-
-        public static void SaveExtension(Lesson lesson, LessonExtension ext)
-        {
-            Directory.CreateDirectory(DbHelper.GetPath($"lessons/{lesson}/"));
-            File.WriteAllText(
-                              DbHelper.GetPath($"lessons/{lesson}/announcements.json"),
-                              JsonConvert.SerializeObject(ext.Announcements, Formatting.Indented));
-            File.WriteAllText(
-                              DbHelper.GetPath($"lessons /{lesson}/documents.json"),
-                              JsonConvert.SerializeObject(ext.Documents, Formatting.Indented));
-            File.WriteAllText(
-                              DbHelper.GetPath($"lessons/{lesson}/assignments.json"),
-                              JsonConvert.SerializeObject(ext.Assignments, Formatting.Indented));
-        }
-
-        public static LessonExtension LoadExtension(Lesson lesson) =>
-            new LessonExtension
-                {
-                    Announcements =
-                        JsonConvert
-                        .DeserializeObject<List<Announcement>>
-                        (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/announcements.json"))),
-                    Documents =
-                        JsonConvert
-                        .DeserializeObject<List<Document>>
-                        (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/documents.json"))),
-                    Assignments =
-                        JsonConvert
-                        .DeserializeObject<List<Assignment>>
-                        (File.ReadAllText(DbHelper.GetPath($"lessons/{lesson}/assignments.json")))
-                };
 
         public static void GenerateStatus()
         {
@@ -110,7 +79,7 @@ namespace WebLearnCore
                 if (lesson.Ignore)
                     continue;
 
-                var ext = LoadExtension(lesson);
+                var ext = LessonExtension.From(lesson);
                 var flag = false;
                 foreach (var assignment in ext.Assignments)
                 {
