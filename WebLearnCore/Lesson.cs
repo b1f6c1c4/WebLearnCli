@@ -41,6 +41,12 @@ namespace WebLearnCore
             get
             {
                 var term = new TermInfo { Year = DateTime.Now.Year };
+                if (DateTime.Now.Month <= 1)
+                {
+                    term.Year--;
+                    term.Index = 0;
+                    return term;
+                }
                 if (DateTime.Now.Month <= 6)
                 {
                     term.Year--;
