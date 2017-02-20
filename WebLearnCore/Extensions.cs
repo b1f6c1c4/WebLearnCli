@@ -54,13 +54,19 @@ namespace WebLearnCore
         }
 
         public void Merge(IEnumerable<Announcement> objs) =>
-            Announcements = objs.GroupJoin(Announcements, o => o.Id, o => o.Id, Merge).ToList();
+            Announcements = Announcements == null
+                ? objs.ToList()
+                : objs.GroupJoin(Announcements, o => o.Id, o => o.Id, Merge).ToList();
 
         public void Merge(IEnumerable<Document> objs) =>
-            Documents = objs.GroupJoin(Documents, o => o.Id, o => o.Id, Merge).ToList();
+            Documents = Documents == null
+                ? objs.ToList()
+                : objs.GroupJoin(Documents, o => o.Id, o => o.Id, Merge).ToList();
 
         public void Merge(IEnumerable<Assignment> objs) =>
-            Assignments = objs.GroupJoin(Assignments, o => o.Id, o => o.Id, Merge).ToList();
+            Assignments = Assignments == null
+                ? objs.ToList()
+                : objs.GroupJoin(Assignments, o => o.Id, o => o.Id, Merge).ToList();
 
         private static T Merge<T>(T newObj, IEnumerable<T> oldObj)
             where T:Extension
