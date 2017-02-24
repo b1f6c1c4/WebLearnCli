@@ -166,6 +166,12 @@ namespace WebLearnCore.Crawler
             var j = await ReadJsonToEnd(req0);
 
             var req = Get($"http://learn.cic.tsinghua.edu.cn{j["result"].Value<string>()}");
+            req.Accept = "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8";
+            req.Referer = $"http://learn.cic.tsinghua.edu.cn/f/student/courseware/{lesson.CourseId}";
+            req.UserAgent =
+                "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
+            req.Headers["Accept-Encoding"] = "gzip, deflate, sdch";
+            req.Headers["Accept-Language"] = "zh-CN,zh;q=0.8,en;q=0.6";
             await DownloadFile(lesson, obj, req);
         }
 
