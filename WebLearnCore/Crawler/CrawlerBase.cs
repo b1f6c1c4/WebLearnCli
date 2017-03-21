@@ -113,10 +113,17 @@ namespace WebLearnCore.Crawler
             }
         }
 
+        /// <summary>
+        ///     Check if it's neccessary to download it.
+        /// </summary>
+        /// <returns><c>true</c> to download</returns>
         protected static bool Check(Lesson lesson, ExtensionWithFile obj)
         {
             if (obj.IsIgnored)
-                return false;
+                return true;
+
+            if (obj.FileUrl == null)
+                return true;
 
             var file = Path.Combine(lesson.Path, obj.FileName);
             if (!File.Exists(file))
