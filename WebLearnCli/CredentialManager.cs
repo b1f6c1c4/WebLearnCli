@@ -1,6 +1,6 @@
 ﻿using CredentialManagement;
 
-namespace WebLearnCore
+namespace WebLearnCli
 {
     public class WebLearnCredential
     {

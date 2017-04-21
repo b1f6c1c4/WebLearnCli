@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace WebLearnCore.Crawler
+namespace WebLearnCli.Crawler
 {
     internal class CrawlerNew : CrawlerBase, ILessonExtensionCrawler
     {

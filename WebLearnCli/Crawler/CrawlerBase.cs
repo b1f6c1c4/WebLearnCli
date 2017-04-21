@@ -7,7 +7,7 @@ using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WebLearnCore.Crawler
+namespace WebLearnCli.Crawler
 {
     internal interface ILessonExtensionCrawler
     {

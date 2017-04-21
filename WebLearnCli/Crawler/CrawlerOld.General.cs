@@ -5,7 +5,7 @@ using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace WebLearnCore.Crawler
+namespace WebLearnCli.Crawler
 {
     internal partial class CrawlerOld : CrawlerBase
     {

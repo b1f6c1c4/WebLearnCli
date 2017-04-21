@@ -4,7 +4,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 
-namespace WebLearnCore.Crawler
+namespace WebLearnCli.Crawler
 {
     internal partial class CrawlerOld : ILessonExtensionCrawler
     {

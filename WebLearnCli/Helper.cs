@@ -3,7 +3,7 @@ using System.IO;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace WebLearnCore
+namespace WebLearnCli
 {
     public static class Helper
     {

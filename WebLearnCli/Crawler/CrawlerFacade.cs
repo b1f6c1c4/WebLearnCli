@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebLearnCore.Crawler
+namespace WebLearnCli.Crawler
 {
     public sealed class CrawlerFacade
     {

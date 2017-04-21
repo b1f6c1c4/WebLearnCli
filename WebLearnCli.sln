@@ -1,11 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25123.0
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLearnCli", "WebLearnCli\WebLearnCli.csproj", "{1AB66CE8-2A90-4556-9000-C8F194FA99CF}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebLearnCore", "WebLearnCore\WebLearnCore.csproj", "{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +15,6 @@ Global
 		{1AB66CE8-2A90-4556-9000-C8F194FA99CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1AB66CE8-2A90-4556-9000-C8F194FA99CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1AB66CE8-2A90-4556-9000-C8F194FA99CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C818DF9B-E7EC-4CC6-95C1-BDD5A89191FB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

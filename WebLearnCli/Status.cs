@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WebLearnCore
+namespace WebLearnCli
 {
     public sealed class Status
     {

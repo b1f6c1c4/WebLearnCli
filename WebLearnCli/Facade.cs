@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using WebLearnCore.Crawler;
+using WebLearnCli.Crawler;
 
-namespace WebLearnCore
+namespace WebLearnCli
 {
     public static class Facade
     {
