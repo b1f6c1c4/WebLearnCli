@@ -38,7 +38,7 @@ namespace WebLearnCli
 
         protected static void AskForProceed()
         {
-            Console.WriteLine("Proceed? Y/n");
+            Console.Write("Proceed? Y/n");
             while (true)
             {
                 var s = Console.ReadLine();
@@ -232,13 +232,13 @@ namespace WebLearnCli
     {
         protected PathExtCommandBase(string command, string oneLineDescription = "") : base(command, oneLineDescription) { }
 
-        protected override sealed int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Announcement> objs) =>
+        protected sealed override int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Announcement> objs) =>
             ConcreteRun(lesson, objs);
 
-        protected override sealed int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Document> objs) =>
+        protected sealed override int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Document> objs) =>
             ConcreteRun(lesson, objs);
 
-        protected override sealed int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Assignment> objs) =>
+        protected sealed override int ConcreteRun(Lesson lesson, LessonExtension ext, IEnumerable<Assignment> objs) =>
             ConcreteRun(lesson, objs);
 
         protected abstract int ConcreteRun(Lesson lesson, IEnumerable<Extension> objs);
