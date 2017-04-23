@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace WebLearnCli
 {
@@ -8,8 +10,16 @@ namespace WebLearnCli
 
         protected override int ConcreteRun(IEnumerable<Lesson> lessons)
         {
-            Facade.Checkout(lessons).Wait();
-            return 0;
+            async Task<int> Checkout()
+            {
+                var facade = await Facade.Login(true);
+                await Task.WhenAll(lessons.Select(l => facade.CheckoutLesson(l.Extension())));
+
+                Facade.GenerateStatus();
+                return 0;
+            }
+
+            return Checkout().Result;
         }
     }
 }

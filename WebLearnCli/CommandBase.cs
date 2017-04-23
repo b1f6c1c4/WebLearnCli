@@ -13,7 +13,7 @@ namespace WebLearnCli
         protected CommandBase(string command, string oneLineDescription = "")
         {
             IsCommand(command, oneLineDescription);
-            HasOption("confirm", "ask before proceed", t => Confirm = t != null);
+            HasOption("c|confirm", "ask before proceed", t => Confirm = t != null);
         }
 
         public override int Run(string[] remainingArguments)
@@ -64,7 +64,7 @@ namespace WebLearnCli
         protected SelectionCommandBase(string command, string oneLineDescription = "")
             : base(command, oneLineDescription)
         {
-            HasOption("previous", "include old lessons.", t => Previous = t != null);
+            HasOption("p|previous", "include old lessons.", t => Previous = t != null);
             HasOption("no-current", "exclude current lessons.", t => NoCurrent = t != null);
         }
     }
@@ -77,7 +77,7 @@ namespace WebLearnCli
             HasAdditionalArguments(null, "lessons");
         }
 
-        protected override sealed int ConcreteRun(string[] remainingArguments)
+        protected sealed override int ConcreteRun(string[] remainingArguments)
         {
             var lst = Filter.GetLessons(Previous, NoCurrent).ToList();
             var lst2 = remainingArguments.Length != 0
@@ -87,6 +87,7 @@ namespace WebLearnCli
             Console.WriteLine("To process:");
             foreach (var lesson in lst2)
                 Console.WriteLine($"{lesson.Term} {lesson.Name}");
+
             if (Confirm)
                 AskForProceed();
 
@@ -103,19 +104,24 @@ namespace WebLearnCli
         {
             HasAdditionalArguments(null, "paths");
             HasLongDescription(@"Path syntax:
-*            any lesson
+*            any non-ignored lesson
+**           any lesson
 <L>          the lesson
 <L>/*        everything of the lesson
-<L>/a        every announcement of the lesson
-<L>/f        every file of the lesson
-<L>/d        every deadline of the lesson
+<L>/         everything new of the lesson
+<L>/a*       every announcement of the lesson
+<L>/f*       every file of the lesson
+<L>/d*       every deadline of the lesson
+<L>/a        every new announcement of the lesson
+<L>/f        every new file of the lesson
+<L>/d        every new deadline of the lesson
 <L>/<T>/<t>  select by title, <T> is a/f/d
-<L>/<T>//<n> select by index (from 0)
+<L>/<T>//<n> select by index (0 is the newest)
 <L>/<n>      select deadline by index
 /<n>         select deadline by (0 is the most urgent)");
         }
 
-        protected override sealed int ConcreteRun(string[] remainingArguments)
+        protected sealed override int ConcreteRun(string[] remainingArguments)
         {
             var lst = Filter.GetLessons(Previous, NoCurrent);
             var filters = remainingArguments.Select(arg => new Filter(arg)).ToList();

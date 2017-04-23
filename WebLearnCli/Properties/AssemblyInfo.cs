@@ -24,7 +24,7 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("1ab66ce8-2a90-4556-9000-c8f194fa99cf")]
 
-// 程序集的版本信息由下列四个值组成: 
+// 程序集的版本信息由下列四个值组成:
 //
 //      主版本
 //      次版本

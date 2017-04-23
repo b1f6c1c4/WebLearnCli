@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.IO;
 
 namespace WebLearnCli
 {
@@ -8,7 +10,18 @@ namespace WebLearnCli
 
         protected override int ConcreteRun(string[] remainingArguments)
         {
-            Facade.Init();
+            if (Directory.Exists("".InDb()))
+                throw new ApplicationException("WebLearn folder already exists.");
+
+            Directory.CreateDirectory("".InDb());
+            Directory.CreateDirectory("lessons/".InDb());
+            Config.Inst =
+                new Config
+                    {
+                        Lessons = new List<Lesson>()
+                    };
+            Config.Save();
+
             Console.Out.WriteLine("Initialized an empty weblearn folder.");
             return 0;
         }

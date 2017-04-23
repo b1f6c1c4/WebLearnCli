@@ -12,6 +12,7 @@ namespace WebLearnCli
         private readonly bool m_Assignment;
         private readonly string m_Title;
         private readonly int m_Index;
+        private readonly bool m_NewOnly;
 
         public static IEnumerable<Lesson> GetLessons(bool previous = false, bool noCurrent = false) =>
             Config.Inst.Lessons
@@ -59,8 +60,11 @@ namespace WebLearnCli
 
         public bool IsMatch(Lesson lesson)
         {
-            if (m_Lesson == "*")
+            if (m_Lesson == "**")
                 return true;
+
+            if (m_Lesson == "*")
+                return !lesson.Ignore;
 
             return lesson.Name == m_Lesson || lesson.Alias.Contains(m_Lesson);
         }
@@ -98,8 +102,12 @@ namespace WebLearnCli
                 yield break;
             }
 
-            foreach (var obj in objs)
-                yield return obj;
+            if (m_NewOnly)
+                foreach (var obj in objs.Where(obj => !obj.IsIgnored))
+                    yield return obj;
+            else
+                foreach (var obj in objs)
+                    yield return obj;
         }
 
         public Filter(string path)
@@ -110,6 +118,8 @@ namespace WebLearnCli
                 // deadline shorthand
                 throw new NotImplementedException();
 
+            m_NewOnly = false;
+
             if (lid < 0)
             {
                 m_Lesson = t;
@@ -119,7 +129,15 @@ namespace WebLearnCli
             m_Lesson = t.Substring(0, lid);
             t = t.Substring(lid + 1);
             if (string.IsNullOrWhiteSpace(t))
-                throw new FormatException();
+            {
+                m_Announcement = true;
+                m_Document = true;
+                m_Assignment = true;
+                m_Title = null;
+                m_Index = -1;
+                m_NewOnly = true;
+                return;
+            }
 
             if (t == "*")
             {
@@ -165,6 +183,16 @@ namespace WebLearnCli
             {
                 m_Title = null;
                 m_Index = -1;
+                m_NewOnly = true;
+                return;
+            }
+
+            if (t.Length == 2 &&
+                t[1] == '*')
+            {
+                m_Title = null;
+                m_Index = -1;
+                m_NewOnly = false;
                 return;
             }
 

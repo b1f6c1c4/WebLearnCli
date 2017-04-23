@@ -184,7 +184,7 @@ namespace WebLearnCli.Crawler
             obj.Assess = Purify(match.Groups["assess"].Value);
         }
 
-        private static string Purify(string val) => HttpUtility.HtmlDecode(val).Trim();
+        private static string Purify(string val) => HttpUtility.HtmlDecode(val)?.Trim();
 
         private static double ParseSize(string val)
         {

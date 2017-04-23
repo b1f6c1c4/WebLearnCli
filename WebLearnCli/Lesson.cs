@@ -80,7 +80,9 @@ namespace WebLearnCli
         }
 
         public override bool Equals(object obj) => obj is TermInfo && this == (TermInfo)obj;
+        // ReSharper disable NonReadonlyMemberInGetHashCode
         public override int GetHashCode() => Year.GetHashCode() ^ Index.GetHashCode();
+        // ReSharper restore NonReadonlyMemberInGetHashCode
         public static bool operator ==(TermInfo x, TermInfo y) => x.Year == y.Year && x.Index == y.Index;
         public static bool operator !=(TermInfo x, TermInfo y) => !(x == y);
 
