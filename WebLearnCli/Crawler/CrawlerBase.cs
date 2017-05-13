@@ -23,7 +23,7 @@ namespace WebLearnCli.Crawler
     {
         private readonly CookieContainer m_Cookie = new CookieContainer();
 
-        protected CrawlerBase() { ServicePointManager.DefaultConnectionLimit = 1000; }
+        protected CrawlerBase() => ServicePointManager.DefaultConnectionLimit = 1000;
 
         protected HttpWebRequest Head(string url)
         {

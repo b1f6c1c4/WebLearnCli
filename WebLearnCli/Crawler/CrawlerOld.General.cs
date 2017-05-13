@@ -142,6 +142,6 @@ namespace WebLearnCli.Crawler
             await DownloadFile(lesson, obj, Get(obj.FileUrl));
         }
 
-        public async Task SubmitAssignment(Lesson lesson, Assignment obj) { throw new NotImplementedException(); }
+        public async Task SubmitAssignment(Lesson lesson, Assignment obj) => throw new NotImplementedException();
     }
 }

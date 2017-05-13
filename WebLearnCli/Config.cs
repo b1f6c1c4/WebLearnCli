@@ -15,7 +15,7 @@ namespace WebLearnCli
                     Load();
                 return m_Inst;
             }
-            set { m_Inst = value; }
+            set => m_Inst = value;
         }
 
         public static void Load() => Inst = "config.json".InDb().LoadJson<Config>();

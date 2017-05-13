@@ -175,7 +175,7 @@ namespace WebLearnCli.Crawler
             await DownloadFile(lesson, obj, req);
         }
 
-        public async Task SubmitAssignment(Lesson lesson, Assignment obj) { throw new NotImplementedException(); }
+        public async Task SubmitAssignment(Lesson lesson, Assignment obj) => throw new NotImplementedException();
 
         private static DateTime FromUnix(long val) =>
             new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddMilliseconds(val).ToLocalTime();

@@ -36,7 +36,7 @@ namespace WebLearnCli
 
         public List<Assignment> Assignments { get; private set; }
 
-        private LessonExtension(Lesson lesson) { Lesson = lesson; }
+        private LessonExtension(Lesson lesson) => Lesson = lesson;
 
         private void Load()
         {
