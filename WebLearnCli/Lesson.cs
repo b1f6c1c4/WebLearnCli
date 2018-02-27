@@ -127,7 +127,7 @@ namespace WebLearnCli
         public string BbsId { get; set; }
 
         public override string ToString() =>
-            $"{Term}/{Name}({Index})";
+            $"{Term}/{Name.Replace(':', '-')}({Index})";
     }
 
     public abstract class Extension

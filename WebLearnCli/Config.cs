@@ -48,7 +48,7 @@ namespace WebLearnCli
                         BbsId = lesson.BbsId,
                         Version = lesson.Version,
                         Ignore = false,
-                        Path = lesson.Name,
+                        Path = lesson.Name.Replace(':', '-'),
                         Alias = new List<string>()
                     };
             Lessons.Add(s);
